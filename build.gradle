@@ -21,6 +21,9 @@ dependencies {
     compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.8'
 
     compile 'commons-beanutils:commons-beanutils:1.9.3'
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compile 'org.projectlombok:lombok:1.18.8'
+
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compile group: 'org.projectlombok', name: 'lombok', version: '1.18.8'

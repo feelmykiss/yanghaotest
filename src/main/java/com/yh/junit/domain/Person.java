@@ -2,20 +2,20 @@ package com.yh.junit.domain;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class Person {
-    private String name;
-    private String sex;
-    private String address;
-    private String national;
-    private Integer age;
-    private List<Piece> pieceList;
+    private String book;
 
-    @Data
-    public static class Piece {
-        private String pieceId;
-        private Integer num;
+    {
+        String abc = "abc";
+        book = abc;
     }
+
+    private String name = "abc";
+    private String sex = "abc";
+    private String home = "abc";
+    private String money = "abc";
+    private String login = "abc";
+    private String password = "abc";
+
 }
