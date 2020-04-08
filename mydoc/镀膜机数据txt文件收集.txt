@@ -1,0 +1,2459 @@
+# 输入插件使Logstash可以从 filebeat 接收事件 
+input {
+	beats {
+    	# filebeat 监控端口,默认5044
+		port => 5044
+		ssl  => false
+		}
+	}
+# 过滤器插件对事件执行中介处理。通常根据事件的特征有条件地应用过滤器。
+filter {
+			# 1.镀膜机 A004 镀膜机 C038
+			if "A004" in [tags] or "C038" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						# 如果message中以 "一个或多个不可见字符 + 任一个数字 + 一个或多个不可见字符| "开头
+						# 则进行解析 message
+						mutate {
+						# 用 , 替换 | 及其两边的空格 ,将其转换为标准 csv 格式
+						gsub => ["message","\s*\|\s*",","]
+						# 替换过后的 message 会比实际上多出一列, 最后一列的内容为 null, 第一行数据后边的空格能被替换,但是之前的空格不会被替换
+						}
+						
+						# 按照 csv 格式的日志进行解析
+						csv {
+							separator => ","
+							}
+						# 去除第一行数据之前的空格
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][ebGunST.mA]"
+								"column5" => "[columns][ebGunEndma]"
+								"column6" => "[columns][domeTempStartC]"
+								"column7" => "[columns][domeTempEndC]"
+								"column8" => "[columns][domeHeater2StartC]"
+								"column9" => "[columns][domeHeater2EndC]"
+								"column10" => "[columns][pressureStartPa]"
+								"column11" => "[columns][pressureEndPa]"
+								"column12" => "[columns][apcFlowStartSccm]"
+								"column13" => "[columns][apcFlowEndSccm]"
+								"column14" => "[columns][timeSec]"
+								"column15" => "[columns][rateST.A/sec]"
+								"column16" => "[columns][rateEndA/sec]"
+								"column17" => "[columns][crystalThick.KA]"
+								"column18" => "[columns][crystalNo]"
+								"column19" => "[columns][crystalFreqkHz]"
+								"[fields][machine]" => "alias"
+									}
+								# 对 layerNo 进行前后去空格处理
+								strip => ["[columns][layerNo]"]	
+								} 
+						}else{
+							# 丢弃无关数据
+							drop{}
+							}
+				}
+				
+			# 2.镀膜机 A006
+			if "A006" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][ebGunST.mA]"
+								"column5" => "[columns][ebGunEndma]"
+								"column6" => "[columns][cupH2]"
+								"column7" => "[columns][domeTempStartC]"
+								"column8" => "[columns][domeTempEndC]"
+								"column9" => "[columns][pressureStartPa]"
+								"column10" => "[columns][pressureEndPa]"
+								"column11" => "[columns][mfcFlowStartSCCM]"
+								"column12" => "[columns][mfcFlowEndSCCM]"
+								"column13" => "[columns][timeSec]"
+								"column14" => "[columns][rateST.A/sec]"
+								"column15" => "[columns][rateEndA/sec]"
+								"column16" => "[columns][crystalThick.kA]"
+								"column17" => "[columns][crystalNo]"
+								"column18" => "[columns][crystalFreqkHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+			# 3.镀膜机 A005
+			if "A005" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][eb1GunST.mA]"
+								"column5" => "[columns][eb1GunEndmA]"
+								"column6" => "[columns][eb2GunST.mA]"
+								"column7" => "[columns][eb2GunEndmA]"
+								"column8" => "[columns][cupH1]"
+								"column9" => "[columns][cupH2]"
+								"column10" => "[columns][domeTempStartC]"
+								"column11" => "[columns][domeTempEndC]"
+								"column12" => "[columns][domeHeater2StartC]"
+								"column13" => "[columns][domeHeater2EndC]"
+								"column14" => "[columns][pressureStartPa]"
+								"column15" => "[columns][pressureEndPa]"
+								"column16" => "[columns][apcFlowStartSccm]"
+								"column17" => "[columns][apcFlowEndSccm]"
+								"column18" => "[columns][timeSec]"
+								"column19" => "[columns][rateST.A/sec]"
+								"column20" => "[columns][rateEndA/sec]"
+								"column21" => "[columns][crystalThick.kA]"
+								"column22" => "[columns][crystalNo]"
+								"column23" => "[columns][crystalFreqkHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 4.镀膜机 A010
+			if "A010" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][filemIndex]"
+								"column12" => "[columns][startLightVV]"
+								"column13" => "[columns][AmpGainHom2d]"
+								"column14" => "[columns][AmpGainHom2n]"
+								"column15" => "[columns][eb1GunST.mA]"
+								"column16" => "[columns][eb1GunEndmA]"
+								"column17" => "[columns][eb2GunST.mA]"
+								"column18" => "[columns][eb2GunEndmA]"
+								"column19" => "[columns][cupH1]"
+								"column20" => "[columns][cupH2]"
+								"column21" => "[columns][domeTempStartC]"
+								"column22" => "[columns][domeTempEndC]"
+								"column23" => "[columns][moni.TempStartC]"
+								"column24" => "[columns][moni.TempEndC]"
+								"column25" => "[columns][pressureStartPa]"
+								"column26" => "[columns][pressureEndPa]"
+								"column27" => "[columns][apcFlowStartSccm]"
+								"column28" => "[columns][apcFlowEndSccm]"
+								"column29" => "[columns][timeSec]"
+								"column30" => "[columns][rateST.A/sec]"
+								"column31" => "[columns][rateEndA/sec]"
+								"column32" => "[columns][crystalThick.kA]"
+								"column33" => "[columns][crystalNo]"
+								"column34" => "[columns][crystalFreqkHz]"
+								"column35" => "[columns][autoGainVal.LightV]"
+								"column36" => "[columns][autoGainVal.GainHom2n]"
+								"column37" => "[columns][overLoadErr]"
+								"column38" => "[columns][revChgTimeoutHappened]"
+								"column39" => "[columns][1stpeakNotOKHappened]"
+								"column40" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+
+			# 5.镀膜机 A011
+			if "A011" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][eb1GunST.mA]"
+								"column5" => "[columns][eb1GunEndmA]"
+								"column6" => "[columns][eb2GunST.mA]"
+								"column7" => "[columns][eb2GunEndmA]"
+								"column8" => "[columns][cupH1]"
+								"column9" => "[columns][cupH2]"
+								"column10" => "[columns][domeTempStartC]"
+								"column11" => "[columns][domeTempEndC]"
+								"column12" => "[columns][pressureStartPa]"
+								"column13" => "[columns][pressureEndPa]"
+								"column14" => "[columns][apcFlowStartSccm]"
+								"column15" => "[columns][apcFlowEndSccm]"
+								"column16" => "[columns][timeSec]"
+								"column17" => "[columns][rateST.A/sec]"
+								"column18" => "[columns][rateEndA/sec]"
+								"column19" => "[columns][crystalThick.kA]"
+								"column20" => "[columns][crystalNo]"
+								"column21" => "[columns][crystalFreqkHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 6.镀膜机 A012
+			if "A012" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][ebGunST.mA]"
+								"column5" => "[columns][ebGunEndma]"
+								"column6" => "[columns][domeTempStartC]"
+								"column7" => "[columns][domeTempEndC]"
+								"column8" => "[columns][pressureStartPa]"
+								"column9" => "[columns][pressureEndPa]"
+								"column10" => "[columns][apcFlowStartSccm]"
+								"column11" => "[columns][apcFlowEndSccm]"
+								"column12" => "[columns][timeSec]"
+								"column13" => "[columns][rateST.A/sec]"
+								"column14" => "[columns][rateEndA/sec]"
+								"column15" => "[columns][crystalThick.kA]"
+								"column16" => "[columns][crystalNo]"
+								"column17" => "[columns][crystalFreqkHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 7.镀膜机 A016 A017 A047 A049 A050
+			if "A016" in [tags] or "A017" in [tags] or "A047" in [tags] or "A049" in [tags] or "A050" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][eb1PosX%]"
+								"column23" => "[columns][eb1PosY%]"
+								"column24" => "[columns][eb2PosX%]"
+								"column25" => "[columns][eb2PosY%]"
+								"column26" => "[columns][cupH1]"
+								"column27" => "[columns][cupH2]"
+								"column28" => "[columns][domeTempStartC]"
+								"column29" => "[columns][domeTempEndC]"
+								"column30" => "[columns][moni.TempStartC]"
+								"column31" => "[columns][moni.TempEndC]"
+								"column32" => "[columns][pressureStartPa]"
+								"column33" => "[columns][pressureEndPa]"
+								"column34" => "[columns][apcFlowStartSccm]"
+								"column35" => "[columns][apcFlowEndSccm]"
+								"column36" => "[columns][timeSec]"
+								"column37" => "[columns][rateST.A/sec]"
+								"column38" => "[columns][rateEndA/sec]"
+								"column39" => "[columns][crystalThick.kA]"
+								"column40" => "[columns][crystalNo]"
+								"column41" => "[columns][crystalFreqkHz]"
+								"column42" => "[columns][autoGainVal.LightV]"
+								"column43" => "[columns][autoGainVal.GainHom2n]"
+								"column44" => "[columns][overLoadErr]"
+								"column45" => "[columns][revChgTimeoutHappened]"
+								"column46" => "[columns][1stpeakNotOKHappened]"
+								"column47" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+			# 8.镀膜机 A048
+			if "A048" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][eb1PosX%]"
+								"column11" => "[columns][eb1PosY%]"
+								"column12" => "[columns][eb2PosX%]"
+								"column13" => "[columns][eb2PosY%]"
+								"column14" => "[columns][cupH1]"
+								"column15" => "[columns][cupH2]"
+								"column16" => "[columns][domeTempStartC]"
+								"column17" => "[columns][domeTempEndC]"
+								"column18" => "[columns][pressureStartPa]"
+								"column19" => "[columns][pressureEndPa]"
+								"column20" => "[columns][apcFlowStartSccm]"
+								"column21" => "[columns][apcFlowEndSccm]"
+								"column22" => "[columns][timeSec]"
+								"column23" => "[columns][rateST.A/sec]"
+								"column24" => "[columns][rateEndA/sec]"
+								"column25" => "[columns][crystalThick.kA]"
+								"column26" => "[columns][crystalNo]"
+								"column37" => "[columns][crystalFrepKHz]"
+								"[fields][machine]" => "alias"
+									}
+								strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							# 丢弃无关数据
+							drop{}
+							}
+				}
+				
+			# 9.镀膜机 A135 测试数据
+			if "A135" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][rhST.A]"
+								"column11" => "[columns][rhEnd.A]"
+								"column12" => "[columns][eb1PosX%]"
+								"column13" => "[columns][eb1PosY%]"
+								"column14" => "[columns][eb2PosX%]"
+								"column15" => "[columns][eb2PosY%]"
+								"column16" => "[columns][cupH1]"
+								"column17" => "[columns][cupH2]"
+								"column18" => "[columns][cupRh]"
+								"column19" => "[columns][domeTempStartC]"
+								"column20" => "[columns][domeTempEndC]"
+								"column21" => "[columns][pressureStartPa]"
+								"column22" => "[columns][pressureEndPa]"
+								"column23" => "[columns][apcFlowStartSccm]"
+								"column24" => "[columns][apcFlowEndSccm]"
+								"column25" => "[columns][timeSec]"
+								"column26" => "[columns][rateST.A/sec]"
+								"column27" => "[columns][rateEndA/sec]"
+								"column28" => "[columns][crystalThick.kA]"
+								"column29" => "[columns][crystalNo]"
+								"column30" => "[columns][crystalFrepKHz]"
+								"column31" => "[columns][flowLimitErr]"
+								"column32" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+								strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							# 丢弃无关数据
+							drop{}
+							}
+				}
+				
+			# 10.镀膜机 A136
+			if "A136" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][rhST.A]"
+								"column11" => "[columns][rhEnd.A]"
+								"column12" => "[columns][eb1PosX%]"
+								"column13" => "[columns][eb1PosY%]"
+								"column14" => "[columns][eb2PosX%]"
+								"column15" => "[columns][eb2PosY%]"
+								"column16" => "[columns][cupH1]"
+								"column17" => "[columns][cupH2]"
+								"column18" => "[columns][cupRh]"
+								"column19" => "[columns][domeTempStartC]"
+								"column20" => "[columns][domeTempEndC]"
+								"column21" => "[columns][pressureStartPa]"
+								"column22" => "[columns][pressureEndPa]"
+								"column23" => "[columns][apcFlowStartSccm]"
+								"column24" => "[columns][apcFlowEndSccm]"
+								"column25" => "[columns][timeSec]"
+								"column26" => "[columns][rateST.A/sec]"
+								"column27" => "[columns][rateEndA/sec]"
+								"column28" => "[columns][crystalThick.kA]"
+								"column29" => "[columns][crystalNo]"
+								"column30" => "[columns][crystalFrepKHz]"
+								"column31" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+								strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							# 丢弃无关数据
+							drop{}
+							}
+				}
+
+			# 11.镀膜机 A137 A139 A142 A165 A166 A168 A169
+			if "A016" in [tags] or "A017" in [tags] or "A047" in [tags] or "A049" in [tags] or "A050" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][revChgTimeoutHappened]"
+								"column49" => "[columns][1stpeakNotOKHappened]"
+								"column50" => "[columns][abnormalLightChg.HappenTime]"
+								"column51" => "[columns][flowLimitErr]"
+								"column52" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+
+			# 12.镀膜机 A138
+			if "A138" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][1stpeakNotOKHappened]"
+								"column49" => "[columns][abnormalLightChg.HappenTime]"
+								"column50" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}	
+
+			# 13.镀膜机 A140 A143 A164 A167
+			if "A140" in [tags] or "A143" in [tags] or "A164" in [tags] or "A167" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][rhST.A]"
+								"column11" => "[columns][rhEnd.A]"
+								"column12" => "[columns][eb1PosX%]"
+								"column13" => "[columns][eb1PosY%]"
+								"column14" => "[columns][eb2PosX%]"
+								"column15" => "[columns][eb2PosY%]"
+								"column16" => "[columns][cupH1]"
+								"column17" => "[columns][cupH2]"
+								"column18" => "[columns][cupRh]"
+								"column19" => "[columns][domeTempStartC]"
+								"column20" => "[columns][domeTempEndC]"
+								"column21" => "[columns][pressureStartPa]"
+								"column22" => "[columns][pressureEndPa]"
+								"column23" => "[columns][apcFlowStartSccm]"
+								"column24" => "[columns][apcFlowEndSccm]"
+								"column25" => "[columns][timeSec]"
+								"column26" => "[columns][rateST.A/sec]"
+								"column27" => "[columns][rateEndA/sec]"
+								"column28" => "[columns][crystalThick.kA]"
+								"column29" => "[columns][crystalNo]"
+								"column30" => "[columns][crystalFreqkHz]"
+								"column31" => "[columns][flowLimitErr]"
+								"column32" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}	
+
+			# 14.镀膜机 A141
+			if "A141" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][revChgTimeoutHappened]"
+								"column49"=> "[columns][1stpeakNotOKHappened]"
+								"column50" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}	
+
+			# 15.镀膜机 A144 A217
+			if "A141" in [tags] or "A217" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][revChgTimeoutHappened]"
+								"column49" => "[columns][1stpeakNotOKHappened]"
+								"column50" => "[columns][abnormalLightChg.HappenTime]"
+								"column51" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}	
+
+			# 16.镀膜机 A170 A171 A176 A177 A179
+			if "A170" in [tags] or "A171" in [tags] or "A176" in [tags] or "A177" in [tags] or "A179" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][eb1PosX%]"
+								"column11" => "[columns][eb1PosY%]"
+								"column12" => "[columns][eb2PosX%]"
+								"column13" => "[columns][eb2PosY%]"
+								"column14" => "[columns][cupH1]"
+								"column15" => "[columns][cupH2]"
+								"column16" => "[columns][domeTempStartC]"
+								"column17" => "[columns][domeTempEndC]"
+								"column18" => "[columns][pressureStartPa]"
+								"column19" => "[columns][pressureEndPa]"
+								"column20" => "[columns][apcFlowStartSccm]"
+								"column21" => "[columns][apcFlowEndSccm]"
+								"column22" => "[columns][timeSec]"
+								"column23" => "[columns][rateST.A/sec]"
+								"column24" => "[columns][rateEndA/sec]"
+								"column25" => "[columns][crystalThick.kA]"
+								"column26" => "[columns][crystalNo]"
+								"column27" => "[columns][crystalFreqkHz]"
+								"column28" => "[columns][flowLimitErr]"
+								"column29" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}			
+				
+			# 17.镀膜机 A172 A173
+			if "A172" in [tags] or "A173" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][eb1GunST.mA]"
+								"column5" => "[columns][eb1GunEndmA]"
+								"column6" => "[columns][eb2GunST.mA]"
+								"column7" => "[columns][eb2GunEndmA]"
+								"column8" => "[columns][cupH1]"
+								"column9" => "[columns][cupH2]"
+								"column10" => "[columns][domeTempStartC]"
+								"column11" => "[columns][domeTempEndC]"
+								"column12" => "[columns][pressureStartPa]"
+								"column13" => "[columns][pressureEndPa]"
+								"column14" => "[columns][apcFlowStartSccm]"
+								"column15" => "[columns][apcFlowEndSccm]"
+								"column16" => "[columns][timeSec]"
+								"column17" => "[columns][rateST.A/sec]"
+								"column18" => "[columns][rateEndA/sec]"
+								"column19" => "[columns][crystalThick.kA]"
+								"column20" => "[columns][crystalNo]"
+								"column21" => "[columns][crystalFreqkHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 18.镀膜机 A174
+			if "A174" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][eb1PosX%]"
+								"column11" => "[columns][eb1PosY%]"
+								"column12" => "[columns][eb2PosX%]"
+								"column13" => "[columns][eb2PosY%]"
+								"column14" => "[columns][cupH1]"
+								"column15" => "[columns][cupH2]"
+								"column16" => "[columns][domeTempStartC]"
+								"column17" => "[columns][domeTempEndC]"
+								"column18" => "[columns][pressureStartPa]"
+								"column19" => "[columns][pressureEndPa]"
+								"column20" => "[columns][apcFlowStartSccm]"
+								"column21" => "[columns][apcFlowEndSccm]"
+								"column22" => "[columns][timeSec]"
+								"column23" => "[columns][rateST.A/sec]"
+								"column24" => "[columns][rateEndA/sec]"
+								"column25" => "[columns][crystalThick.kA]"
+								"column26" => "[columns][crystalNo]"
+								"column27" => "[columns][crystalFreqkHz]"
+								"column28" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 19.镀膜机 A175
+			if "A175" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][eb1PosX%]"
+								"column23" => "[columns][eb1PosY%]"
+								"column24" => "[columns][eb2PosX%]"
+								"column25" => "[columns][eb2PosY%]"
+								"column26" => "[columns][cupH1]"
+								"column27" => "[columns][cupH2]"
+								"column28" => "[columns][domeTempStartC]"
+								"column29" => "[columns][domeTempEndC]"
+								"column30" => "[columns][moni.TempStartC]"
+								"column31" => "[columns][moni.TempEndC]"
+								"column32" => "[columns][pressureStartPa]"
+								"column33" => "[columns][pressureEndPa]"
+								"column34" => "[columns][apcFlowStartSccm]"
+								"column35" => "[columns][apcFlowEndSccm]"
+								"column36" => "[columns][timeSec]"
+								"column37" => "[columns][rateST.A/sec]"
+								"column38" => "[columns][rateEndA/sec]"
+								"column39" => "[columns][crystalThick.kA]"
+								"column40" => "[columns][crystalNo]"
+								"column41" => "[columns][crystalFreqkHz]"
+								"column42" => "[columns][autoGainVal.LightV]"
+								"column43" => "[columns][autoGainVal.GainHom2n]"
+								"column44" => "[columns][overLoadErr]"
+								"column45" => "[columns][revChgTimeoutHappened]"
+								"column46" => "[columns][1stpeakNotOKHappened]"
+								"column47" => "[columns][abnormalLightChg.HappenTime]"
+								"column48" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 20.镀膜机 A178
+			if "A178" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][eb1PosX%]"
+								"column11" => "[columns][eb1PosY%]"
+								"column12" => "[columns][eb2PosX%]"
+								"column13" => "[columns][eb2PosY%]"
+								"column14" => "[columns][cupH1]"
+								"column15" => "[columns][cupH2]"
+								"column16" => "[columns][domeTempStartC]"
+								"column17" => "[columns][domeTempEndC]"
+								"column18" => "[columns][pressureStartPa]"
+								"column19" => "[columns][pressureEndPa]"
+								"column20" => "[columns][apcFlowStartSccm]"
+								"column21" => "[columns][apcFlowEndSccm]"
+								"column22" => "[columns][timeSec]"
+								"column23" => "[columns][rateST.A/sec]"
+								"column24" => "[columns][rateEndA/sec]"
+								"column25" => "[columns][crystalThick.kA]"
+								"column26" => "[columns][crystalNo]"
+								"column27" => "[columns][crystalFreqkHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}		
+				
+			# 21.镀膜机 A219
+			if "A219" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][cupH1]"
+								"column25" => "[columns][cupH2]"
+								"column26" => "[columns][cupRh]"
+								"column27" => "[columns][domeTempStartC]"
+								"column28" => "[columns][domeTempEndC]"
+								"column29" => "[columns][moni.TempStartC]"
+								"column30" => "[columns][moni.TempEndC]"
+								"column31" => "[columns][pressureStartPa]"
+								"column32" => "[columns][pressureEndPa]"
+								"column33" => "[columns][apcFlowStartSccm]"
+								"column34" => "[columns][apcFlowEndSccm]"
+								"column35" => "[columns][timeSec]"
+								"column36" => "[columns][rateST.A/sec]"
+								"column37" => "[columns][rateEndA/sec]"
+								"column38" => "[columns][crystalThick.kA]"
+								"column39" => "[columns][crystalNo]"
+								"column40" => "[columns][crystalFreqkHz]"
+								"column41" => "[columns][autoGainVal.LightV]"
+								"column42" => "[columns][autoGainVal.GainHom2n]"
+								"column43" => "[columns][overLoadErr]"
+								"column44" => "[columns][revChgTimeoutHappened]"
+								"column45" => "[columns][1stpeakNotOKHappened]"
+								"column46" => "[columns][abnormalLightChg.HappenTime]"
+								"column47" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 22.镀膜机 B018
+			if "B018" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][filemIndex]"
+								"column12" => "[columns][startLightVV]"
+								"column13" => "[columns][AmpGainHom2d]"
+								"column14" => "[columns][AmpGainHom2n]"
+								"column15" => "[columns][eb1GunST.mA]"
+								"column16" => "[columns][eb1GunEndmA]"
+								"column17" => "[columns][eb2GunST.mA]"
+								"column18" => "[columns][eb2GunEndmA]"
+								"column19" => "[columns][eb1PosX%]"
+								"column20" => "[columns][eb1PosY%]"
+								"column21" => "[columns][eb2PosX%]"
+								"column22" => "[columns][eb2PosY%]"
+								"column23" => "[columns][cupH1]"
+								"column24" => "[columns][cupH2]"
+								"column25" => "[columns][domeTempStartC]"
+								"column26" => "[columns][domeTempEndC]"
+								"column27" => "[columns][moni.TempStartC]"
+								"column28" => "[columns][moni.TempEndC]"
+								"column29" => "[columns][pressureStartPa]"
+								"column30" => "[columns][pressureEndPa]"
+								"column31" => "[columns][apcFlowStartSccm]"
+								"column32" => "[columns][apcFlowEndSccm]"
+								"column33" => "[columns][timeSec]"
+								"column34" => "[columns][rateST.A/sec]"
+								"column35" => "[columns][rateEndA/sec]"
+								"column36" => "[columns][crystalThick.kA]"
+								"column37" => "[columns][crystalNo]"
+								"column38" => "[columns][crystalFreqkHz]"
+								"column39" => "[columns][autoGainVal.LightV]"
+								"column40" => "[columns][autoGainVal.GainHom2n]"
+								"column41" => "[columns][overLoadErr]"
+								"column42" => "[columns][revChgTimeoutHappened]"
+								"column43" => "[columns][1stpeakNotOKHappened]"
+								"column44" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 23.镀膜机 B021
+			if "B021" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][eb1PosX%]"
+								"column11" => "[columns][eb1PosY%]"
+								"column12" => "[columns][eb2PosX%]"
+								"column13" => "[columns][eb2PosY%]"
+								"column14" => "[columns][cupH1]"
+								"column15" => "[columns][cupH2]"
+								"column16" => "[columns][domeTempStartC]"
+								"column17" => "[columns][domeTempEndC]"
+								"column18" => "[columns][pressureStartPa]"
+								"column19" => "[columns][pressureEndPa]"
+								"column20" => "[columns][apcFlowStartSccm]"
+								"column21" => "[columns][apcFlowEndSccm]"
+								"column22" => "[columns][timeSec]"
+								"column23" => "[columns][rateST.A/sec]"
+								"column24" => "[columns][rateEndA/sec]"
+								"column25" => "[columns][crystalThick.kA]"
+								"column26" => "[columns][crystalNo]"
+								"column27" => "[columns][crystalFreqkHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}	
+
+			# 24.镀膜机 B022 B023 B026 C043 
+			if "B022" in [tags] or "B023" in [tags] or "B026" in [tags] or "C043" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][eb1PosX%]"
+								"column23" => "[columns][eb1PosY%]"
+								"column24" => "[columns][eb2PosX%]"
+								"column25" => "[columns][eb2PosY%]"
+								"column26" => "[columns][cupH1]"
+								"column27" => "[columns][cupH2]"
+								"column28" => "[columns][domeTempStartC]"
+								"column29" => "[columns][domeTempEndC]"
+								"column30" => "[columns][moni.TempStartC]"
+								"column31" => "[columns][moni.TempEndC]"
+								"column32" => "[columns][pressureStartPa]"
+								"column33" => "[columns][pressureEndPa]"
+								"column34" => "[columns][apcFlowStartSccm]"
+								"column35" => "[columns][apcFlowEndSccm]"
+								"column36" => "[columns][mfcFlowStartSCCM]"
+								"column37" => "[columns][mfcFlowEndSCCM]"
+								"column38" => "[columns][timeSec]"
+								"column39" => "[columns][rateST.A/sec]"
+								"column40" => "[columns][rateEndA/sec]"
+								"column41" => "[columns][crystalThick.kA]"
+								"column42" => "[columns][crystalNo]"
+								"column43" => "[columns][crystalFreqkHz]"
+								"column44" => "[columns][autoGainVal.LightV]"
+								"column45" => "[columns][autoGainVal.GainHom2n]"
+								"column46" => "[columns][overLoadErr]"
+								"column47" => "[columns][revChgTimeoutHappened]"
+								"column48" => "[columns][1stpeakNotOKHappened]"
+								"column49" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}		
+				
+			# 25.镀膜机 B025
+			if "B025" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][eb1PosX%]"
+								"column23" => "[columns][eb1PosY%]"
+								"column24" => "[columns][eb2PosX%]"
+								"column25" => "[columns][eb2PosY%]"
+								"column26" => "[columns][domeTempStartC]"
+								"column27" => "[columns][domeTempEndC]"
+								"column28" => "[columns][moni.TempStartC]"
+								"column29" => "[columns][moni.TempEndC]"
+								"column30" => "[columns][pressureStartPa]"
+								"column31" => "[columns][pressureEndPa]"
+								"column32" => "[columns][apcFlowStartSccm]"
+								"column33" => "[columns][apcFlowEndSccm]"
+								"column34" => "[columns][mfcFlowStartSCCM]"
+								"column35" => "[columns][mfcFlowEndSCCM]"
+								"column36" => "[columns][timeSec]"
+								"column37" => "[columns][rateST.A/sec]"
+								"column38" => "[columns][rateEndA/sec]"
+								"column39" => "[columns][crystalThick.kA]"
+								"column40" => "[columns][crystalNo]"
+								"column41" => "[columns][crystalFreqkHz]"
+								"column42" => "[columns][autoGainVal.LightV]"
+								"column43" => "[columns][autoGainVal.GainHom2n]"
+								"column44" => "[columns][overLoadErr]"
+								"column45" => "[columns][revChgTimeoutHappened]"
+								"column46" => "[columns][1stpeakNotOKHappened]"
+								"column47" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 26.镀膜机 C034 C037
+			if "C034" in [tags] or "C037" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][eb1PosX%]"
+								"column23" => "[columns][eb1PosY%]"
+								"column24" => "[columns][eb2PosX%]"
+								"column25" => "[columns][eb2PosY%]"
+								"column26" => "[columns][cupH1]"
+								"column27" => "[columns][cupH2]"
+								"column28" => "[columns][domeTempStartC]"
+								"column29" => "[columns][domeTempEndC]"
+								"column30" => "[columns][moni.TempStartC]"
+								"column31" => "[columns][moni.TempEndC]"
+								"column32" => "[columns][pressureStartPa]"
+								"column33" => "[columns][pressureEndPa]"
+								"column34" => "[columns][apcFlowStartSccm]"
+								"column35" => "[columns][apcFlowEndSccm]"
+								"column36" => "[columns][timeSec]"
+								"column37" => "[columns][rateST.A/sec]"
+								"column38" => "[columns][rateEndA/sec]"
+								"column39" => "[columns][crystalThick.kA]"
+								"column40" => "[columns][crystalNo]"
+								"column41" => "[columns][crystalFreqkHz]"
+								"column42" => "[columns][autoGainVal.LightV]"
+								"column43" => "[columns][autoGainVal.GainHom2n]"
+								"column44" => "[columns][overLoadErr]"
+								"column45" => "[columns][revChgTimeoutHappened]"
+								"column46" => "[columns][1stpeakNotOKHappened]"
+								"column47" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+
+			# 27.镀膜机 C041
+			if "C041" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][eb1PosX%]"
+								"column11" => "[columns][eb1PosY%]"
+								"column12" => "[columns][eb2PosX%]"
+								"column13" => "[columns][eb2PosY%]"
+								"column14" => "[columns][cupH1]"
+								"column15" => "[columns][cupH2]"
+								"column16" => "[columns][domeTempStartC]"
+								"column17" => "[columns][domeTempEndC]"
+								"column18" => "[columns][pressureStartPa]"
+								"column19" => "[columns][pressureEndPa]"
+								"column20" => "[columns][apcFlowStartSccm]"
+								"column21" => "[columns][apcFlowEndSccm]"
+								"column22" => "[columns][mfcFlowStartSCCM]"
+								"column23" => "[columns][mfcFlowEndSCCM]"
+								"column24" => "[columns][timeSec]"
+								"column25" => "[columns][rateST.A/sec]"
+								"column26" => "[columns][rateEndA/sec]"
+								"column27" => "[columns][crystalThick.kA]"
+								"column28" => "[columns][crystalNo]"
+								"column29" => "[columns][crystalFrepKHz]"
+								"column30" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 28.镀膜机 C042
+			if "C041" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][eb1GunST.mA]"
+								"column5" => "[columns][eb1GunEndmA]"
+								"column6" => "[columns][eb2GunST.mA]"
+								"column7" => "[columns][eb2GunEndmA]"
+								"column8" => "[columns][eb1PosX%]"
+								"column9" => "[columns][eb1PosY%]"
+								"column10" => "[columns][eb2PosX%]"
+								"column11" => "[columns][eb2PosY%]"
+								"column12" => "[columns][cupH1]"
+								"column13" => "[columns][cupH2]"
+								"column14" => "[columns][domeTempStartC]"
+								"column15" => "[columns][domeTempEndC]"
+								"column16" => "[columns][pressureStartPa]"
+								"column17" => "[columns][pressureEndPa]"
+								"column18" => "[columns][apcFlowStartSccm]"
+								"column19" => "[columns][apcFlowEndSccm]"
+								"column20" => "[columns][mfcFlowStartSCCM]"
+								"column21" => "[columns][mfcFlowEndSCCM]"
+								"column22" => "[columns][timeSec]"
+								"column23" => "[columns][rateST.A/sec]"
+								"column24" => "[columns][rateEndA/sec]"
+								"column25" => "[columns][crystalThick.kA]"
+								"column26" => "[columns][crystalNo]"
+								"column27" => "[columns][crystalFrepKHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}		
+
+			# 29.镀膜机 C110
+			if "C110" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][domeTempStartC]"
+								"column31" => "[columns][domeTempEndC]"
+								"column32" => "[columns][moni.TempStartC]"
+								"column33" => "[columns][moni.TempEndC]"
+								"column34" => "[columns][pressureStartPa]"
+								"column35" => "[columns][pressureEndPa]"
+								"column36" => "[columns][apcFlowStartSccm]"
+								"column37" => "[columns][apcFlowEndSccm]"
+								"column38" => "[columns][timeSec]"
+								"column39" => "[columns][rateST.A/sec]"
+								"column40" => "[columns][rateEndA/sec]"
+								"column41" => "[columns][crystalThick.kA]"
+								"column42" => "[columns][crystalNo]"
+								"column43" => "[columns][crystalFreqkHz]"
+								"column44" => "[columns][autoGainVal.LightV]"
+								"column45" => "[columns][autoGainVal.GainHom2n]"
+								"column46" => "[columns][overLoadErr]"
+								"column47" => "[columns][revChgTimeoutHappened]"
+								"column48" => "[columns][1stpeakNotOKHappened]"
+								"column49" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}	
+
+			# 30.镀膜机 E121 E123 E127 E131 E133 E134 E300
+			if "E121" in [tags] or "E123" in [tags] or "E127" in [tags] or "E131" in [tags] or "E133" in [tags]or "E134" in [tags] or "E300" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][revChgTimeoutHappened]"
+								"column49" => "[columns][1stpeakNotOKHappened]"
+								"column50" => "[columns][abnormalLightChg.HappenTime]"
+								"column51" => "[columns][flowLimitErr]"
+								"column52" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}		
+				
+			# 31.镀膜机 E122 E124 E128 E129
+			if "E122" in [tags] or "E124" in [tags] or "E128" in [tags] or "E129" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][revChgTimeoutHappened]"
+								"column49" => "[columns][1stpeakNotOKHappened]"
+								"column50" => "[columns][abnormalLightChg.HappenTime]"
+								"column51" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}	
+				
+			# 32.镀膜机 E125
+			if "E125" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][rhST.A]"
+								"column11" => "[columns][rhEnd.A]"
+								"column12" => "[columns][eb1PosX%]"
+								"column13" => "[columns][eb1PosY%]"
+								"column14" => "[columns][eb2PosX%]"
+								"column15" => "[columns][eb2PosY%]"
+								"column16" => "[columns][cupH1]"
+								"column17" => "[columns][cupH2]"
+								"column18" => "[columns][cupRh]"
+								"column19" => "[columns][domeTempStartC]"
+								"column20" => "[columns][domeTempEndC]"
+								"column21" => "[columns][pressureStartPa]"
+								"column22" => "[columns][pressureEndPa]"
+								"column23" => "[columns][apcFlowStartSccm]"
+								"column24" => "[columns][apcFlowEndSccm]"
+								"column25" => "[columns][timeSec]"
+								"column26" => "[columns][rateST.A/sec]"
+								"column27" => "[columns][rateEndA/sec]"
+								"column28" => "[columns][crystalThick.kA]"
+								"column29" => "[columns][crystalNo]"
+								"column30" => "[columns][crystalFrepKHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 33.镀膜机 E126
+			if "E126" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][rhST.A]"
+								"column11" => "[columns][rhEnd.A]"
+								"column12" => "[columns][eb1PosX%]"
+								"column13" => "[columns][eb1PosY%]"
+								"column14" => "[columns][eb2PosX%]"
+								"column15" => "[columns][eb2PosY%]"
+								"column16" => "[columns][cupH1]"
+								"column17" => "[columns][cupH2]"
+								"column18" => "[columns][cupRh]"
+								"column19" => "[columns][domeTempStartC]"
+								"column20" => "[columns][domeTempEndC]"
+								"column21" => "[columns][pressureStartPa]"
+								"column22" => "[columns][pressureEndPa]"
+								"column23" => "[columns][apcFlowStartSccm]"
+								"column24" => "[columns][apcFlowEndSccm]"
+								"column25" => "[columns][timeSec]"
+								"column26" => "[columns][rateST.A/sec]"
+								"column27" => "[columns][rateEndA/sec]"
+								"column28" => "[columns][crystalThick.kA]"
+								"column29" => "[columns][crystalNo]"
+								"column30" => "[columns][crystalFrepKHz]"
+								"column31" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 34.镀膜机 E132
+			if "E132" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][maskSV.1]"
+								"column5" => "[columns][maskSV.2]"
+								"column6" => "[columns][eb1GunST.mA]"
+								"column7" => "[columns][eb1GunEndmA]"
+								"column8" => "[columns][eb2GunST.mA]"
+								"column9" => "[columns][eb2GunEndmA]"
+								"column10" => "[columns][rhST.A]"
+								"column11" => "[columns][rhEnd.A]"
+								"column12" => "[columns][eb1PosX%]"
+								"column13" => "[columns][eb1PosY%]"
+								"column14" => "[columns][eb2PosX%]"
+								"column15" => "[columns][eb2PosY%]"
+								"column16" => "[columns][cupH1]"
+								"column17" => "[columns][cupH2]"
+								"column18" => "[columns][cupRh]"
+								"column19" => "[columns][domeTempStartC]"
+								"column20" => "[columns][domeTempEndC]"
+								"column21" => "[columns][pressureStartPa]"
+								"column22" => "[columns][pressureEndPa]"
+								"column23" => "[columns][apcFlowStartSccm]"
+								"column24" => "[columns][apcFlowEndSccm]"
+								"column25" => "[columns][timeSec]"
+								"column26" => "[columns][rateST.A/sec]"
+								"column27" => "[columns][rateEndA/sec]"
+								"column28" => "[columns][crystalThick.kA]"
+								"column29" => "[columns][crystalNo]"
+								"column30" => "[columns][crystalFrepKHz]"
+								"column31" => "[columns][flowLimitErr]"
+								"column32" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 35.镀膜机 F112 F146
+			if "F112" in [tags] or "F146" in [tags] {
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][revChgTimeoutHappened]"
+								"column49" => "[columns][1stpeakNotOKHappened]"
+								"column50" => "[columns][abnormalLightChg.HappenTime]"
+								"column51" => "[columns][flowLimitErr]"
+								"column52" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 36.镀膜机 F145 F148
+			if "F145" in [tags] or "F148" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][filemIndex]"
+								"column12" => "[columns][startLightVV]"
+								"column13" => "[columns][AmpGainHom2d]"
+								"column14" => "[columns][AmpGainHom2n]"
+								"column15" => "[columns][eb1GunST.mA]"
+								"column16" => "[columns][eb1GunEndmA]"
+								"column17" => "[columns][eb2GunST.mA]"
+								"column18" => "[columns][eb2GunEndmA]"
+								"column19" => "[columns][rhST.A]"
+								"column20" => "[columns][rhEnd.A]"
+								"column21" => "[columns][eb1PosX%]"
+								"column22" => "[columns][eb1PosY%]"
+								"column23" => "[columns][eb2PosX%]"
+								"column24" => "[columns][eb2PosY%]"
+								"column25" => "[columns][cupH1]"
+								"column26" => "[columns][cupH2]"
+								"column27" => "[columns][cupRh]"
+								"column28" => "[columns][domeTempStartC]"
+								"column29" => "[columns][domeTempEndC]"
+								"column30" => "[columns][moni.TempStartC]"
+								"column31" => "[columns][moni.TempEndC]"
+								"column32" => "[columns][pressureStartPa]"
+								"column33" => "[columns][pressureEndPa]"
+								"column34" => "[columns][apcFlowStartSccm]"
+								"column35" => "[columns][apcFlowEndSccm]"
+								"column36" => "[columns][timeSec]"
+								"column37" => "[columns][rateST.A/sec]"
+								"column38" => "[columns][rateEndA/sec]"
+								"column39" => "[columns][crystalThick.kA]"
+								"column40" => "[columns][crystalNo]"
+								"column41" => "[columns][crystalFreqkHz]"
+								"column42" => "[columns][autoGainVal.LightV]"
+								"column43" => "[columns][autoGainVal.GainHom2n]"
+								"column44" => "[columns][overLoadErr]"
+								"column45" => "[columns][revChgTimeoutHappened]"
+								"column46" => "[columns][1stpeakNotOKHappened]"
+								"column47" => "[columns][abnormalLightChg.HappenTime]"
+								"column48" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 37.镀膜机 F147
+			if "F147" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][filemIndex]"
+								"column12" => "[columns][startLightVV]"
+								"column13" => "[columns][AmpGainHom2d]"
+								"column14" => "[columns][AmpGainHom2n]"
+								"column15" => "[columns][eb1GunST.mA]"
+								"column16" => "[columns][eb1GunEndmA]"
+								"column17" => "[columns][eb2GunST.mA]"
+								"column18" => "[columns][eb2GunEndmA]"
+								"column19" => "[columns][rhST.A]"
+								"column20" => "[columns][rhEnd.A]"
+								"column21" => "[columns][cupH1]"
+								"column22" => "[columns][cupH2]"
+								"column23" => "[columns][cupRh]"
+								"column24" => "[columns][domeTempStartC]"
+								"column25" => "[columns][domeTempEndC]"
+								"column26" => "[columns][moni.TempStartC]"
+								"column27" => "[columns][moni.TempEndC]"
+								"column28" => "[columns][pressureStartPa]"
+								"column29" => "[columns][pressureEndPa]"
+								"column30" => "[columns][apcFlowStartSccm]"
+								"column31" => "[columns][apcFlowEndSccm]"
+								"column32" => "[columns][timeSec]"
+								"column33" => "[columns][rateST.A/sec]"
+								"column34" => "[columns][rateEndA/sec]"
+								"column35" => "[columns][crystalThick.kA]"
+								"column36" => "[columns][crystalNo]"
+								"column37" => "[columns][crystalFreqkHz]"
+								"column38" => "[columns][autoGainVal.LightV]"
+								"column39" => "[columns][autoGainVal.GainHom2n]"
+								"column40" => "[columns][overLoadErr]"
+								"column41" => "[columns][revChgTimeoutHappened]"
+								"column42" => "[columns][1stpeakNotOKHappened]"
+								"column43" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 38.镀膜机 F149
+			if "F149" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][revChgTimeoutHappened]"
+								"column49" => "[columns][1stpeakNotOKHappened]"
+								"column50" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 39.镀膜机 F150
+			if "F150" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][filemIndex]"
+								"column12" => "[columns][startLightVV]"
+								"column13" => "[columns][AmpGainHom2d]"
+								"column14" => "[columns][AmpGainHom2n]"
+								"column15" => "[columns][eb1GunST.mA]"
+								"column16" => "[columns][eb1GunEndmA]"
+								"column17" => "[columns][eb2GunST.mA]"
+								"column18" => "[columns][eb2GunEndmA]"
+								"column19" => "[columns][rhST.A]"
+								"column20" => "[columns][rhEnd.A]"
+								"column21" => "[columns][eb1PosX%]"
+								"column22" => "[columns][eb1PosY%]"
+								"column23" => "[columns][eb2PosX%]"
+								"column24" => "[columns][eb2PosY%]"
+								"column25" => "[columns][cupH1]"
+								"column26" => "[columns][cupH2]"
+								"column27" => "[columns][cupRh]"
+								"column28" => "[columns][domeTempStartC]"
+								"column29" => "[columns][domeTempEndC]"
+								"column30" => "[columns][moni.TempStartC]"
+								"column31" => "[columns][moni.TempEndC]"
+								"column32" => "[columns][pressureStartPa]"
+								"column33" => "[columns][pressureEndPa]"
+								"column34" => "[columns][apcFlowStartSccm]"
+								"column35" => "[columns][apcFlowEndSccm]"
+								"column36" => "[columns][timeSec]"
+								"column37" => "[columns][rateST.A/sec]"
+								"column38" => "[columns][rateEndA/sec]"
+								"column39" => "[columns][crystalThick.kA]"
+								"column40" => "[columns][crystalNo]"
+								"column41" => "[columns][crystalFreqkHz]"
+								"column42" => "[columns][autoGainVal.LightV]"
+								"column43" => "[columns][autoGainVal.GainHom2n]"
+								"column44" => "[columns][overLoadErr]"
+								"column45" => "[columns][revChgTimeoutHappened]"
+								"column46" => "[columns][1stpeakNotOKHappened]"
+								"column47" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 40.镀膜机 F151
+			if "F151" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][lightAim.SV%]"
+								"column12" => "[columns][maskSV.1]"
+								"column13" => "[columns][maskSV.2]"
+								"column14" => "[columns][filemIndex]"
+								"column15" => "[columns][startLightVV]"
+								"column16" => "[columns][AmpGainHom2d]"
+								"column17" => "[columns][AmpGainHom2n]"
+								"column18" => "[columns][eb1GunST.mA]"
+								"column19" => "[columns][eb1GunEndmA]"
+								"column20" => "[columns][eb2GunST.mA]"
+								"column21" => "[columns][eb2GunEndmA]"
+								"column22" => "[columns][rhST.A]"
+								"column23" => "[columns][rhEnd.A]"
+								"column24" => "[columns][eb1PosX%]"
+								"column25" => "[columns][eb1PosY%]"
+								"column26" => "[columns][eb2PosX%]"
+								"column27" => "[columns][eb2PosY%]"
+								"column28" => "[columns][cupH1]"
+								"column29" => "[columns][cupH2]"
+								"column30" => "[columns][cupRh]"
+								"column31" => "[columns][domeTempStartC]"
+								"column32" => "[columns][domeTempEndC]"
+								"column33" => "[columns][moni.TempStartC]"
+								"column34" => "[columns][moni.TempEndC]"
+								"column35" => "[columns][pressureStartPa]"
+								"column36" => "[columns][pressureEndPa]"
+								"column37" => "[columns][apcFlowStartSccm]"
+								"column38" => "[columns][apcFlowEndSccm]"
+								"column39" => "[columns][timeSec]"
+								"column40" => "[columns][rateST.A/sec]"
+								"column41" => "[columns][rateEndA/sec]"
+								"column42" => "[columns][crystalThick.kA]"
+								"column43" => "[columns][crystalNo]"
+								"column44" => "[columns][crystalFreqkHz]"
+								"column45" => "[columns][autoGainVal.LightV]"
+								"column46" => "[columns][autoGainVal.GainHom2n]"
+								"column47" => "[columns][overLoadErr]"
+								"column48" => "[columns][revChgTimeoutHappened]"
+								"column49" => "[columns][1stpeakNotOKHappened]"
+								"column50" => "[columns][abnormalLightChg.HappenTime]"
+								"column51" => "[columns][evapSrcShutterOpen]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 41.镀膜机 F152 H111
+			if "F152" in [tags] or "H111" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][lightDir]"
+								"column5" => "[columns][wavelenNm]"
+								"column6" => "[columns][mgNo.]"
+								"column7" => "[columns][peakNo]"
+								"column8" => "[columns][lightValueStart1%]"
+								"column9" => "[columns][lightValueStart2%]"
+								"column10" => "[columns][lightValueStop%]"
+								"column11" => "[columns][filemIndex]"
+								"column12" => "[columns][startLightVV]"
+								"column13" => "[columns][AmpGainHom2d]"
+								"column14" => "[columns][AmpGainHom2n]"
+								"column15" => "[columns][eb1GunST.mA]"
+								"column16" => "[columns][eb1GunEndmA]"
+								"column17" => "[columns][eb2GunST.mA]"
+								"column18" => "[columns][eb2GunEndmA]"
+								"column19" => "[columns][rhST.A]"
+								"column20" => "[columns][rhEnd.A]"
+								"column21" => "[columns][eb1PosX%]"
+								"column22" => "[columns][eb1PosY%]"
+								"column23" => "[columns][eb2PosX%]"
+								"column24" => "[columns][eb2PosY%]"
+								"column25" => "[columns][cupH1]"
+								"column26" => "[columns][cupH2]"
+								"column27" => "[columns][cupRh]"
+								"column28" => "[columns][domeTempStartC]"
+								"column29" => "[columns][domeTempEndC]"
+								"column30" => "[columns][moni.TempStartC]"
+								"column31" => "[columns][moni.TempEndC]"
+								"column32" => "[columns][pressureStartPa]"
+								"column33" => "[columns][pressureEndPa]"
+								"column34" => "[columns][apcFlowStartSccm]"
+								"column35" => "[columns][apcFlowEndSccm]"
+								"column36" => "[columns][timeSec]"
+								"column37" => "[columns][rateST.A/sec]"
+								"column38" => "[columns][rateEndA/sec]"
+								"column39" => "[columns][crystalThick.kA]"
+								"column40" => "[columns][crystalNo]"
+								"column41" => "[columns][crystalFreqkHz]"
+								"column42" => "[columns][autoGainVal.LightV]"
+								"column43" => "[columns][autoGainVal.GainHom2n]"
+								"column44" => "[columns][overLoadErr]"
+								"column45" => "[columns][revChgTimeoutHappened]"
+								"column46" => "[columns][1stpeakNotOKHappened]"
+								"column47" => "[columns][abnormalLightChg.HappenTime]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+				
+			# 41.镀膜机 F153
+			if "F153" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][layerNo]"
+								"column2" => "[columns][materialName]"
+								"column3" => "[columns][controlType]"
+								"column4" => "[columns][eb1GunST.mA]"
+								"column5" => "[columns][eb1GunEndmA]"
+								"column6" => "[columns][eb2GunST.mA]"
+								"column7" => "[columns][eb2GunEndmA]"
+								"column8" => "[columns][rhST.A]"
+								"column9" => "[columns][rhEnd.A]"
+								"column10" => "[columns][eb1PosX%]"
+								"column11" => "[columns][eb1PosY%]"
+								"column12" => "[columns][eb2PosX%]"
+								"column13" => "[columns][eb2PosY%]"
+								"column14" => "[columns][cupH1]"
+								"column15" => "[columns][cupH2]"
+								"column16" => "[columns][cupRh]"
+								"column17" => "[columns][domeTempStartC]"
+								"column18" => "[columns][domeTempEndC]"
+								"column19" => "[columns][pressureStartPa]"
+								"column20" => "[columns][pressureEndPa]"
+								"column21" => "[columns][apcFlowStartSccm]"
+								"column22" => "[columns][apcFlowEndSccm]"
+								"column23" => "[columns][timeSec]"
+								"column24" => "[columns][rateST.A/sec]"
+								"column25" => "[columns][rateEndA/sec]"
+								"column26" => "[columns][crystalThick.kA]"
+								"column27" => "[columns][crystalNo]"
+								"column28" => "[columns][crystalFrepKHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][layerNo]"]
+								} 
+						}else{
+							drop{}
+							}
+				}
+}
+
+# 输出
+output {
+	file {
+        path => "D:/file/to/txtoutput/output13.log"
+		}
+}

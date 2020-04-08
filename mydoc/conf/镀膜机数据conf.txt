@@ -1,0 +1,2459 @@
+# 输入插件使Logstash可以从 filebeat 接收事件
+input {
+	beats {
+    	# filebeat 监控端口,默认5044
+		port => 5044
+		ssl  => false
+		}
+	}
+# 过滤器插件对事件执行中介处理。通常根据事件的特征有条件地应用过滤器。
+filter {
+			# 1.镀膜机 A004 镀膜机 C038
+			if "A004" in [tags] or "C038" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						# 如果message中以 "一个或多个不可见字符 + 任一个数字 + 一个或多个不可见字符| "开头
+						# 则进行解析 message
+						mutate {
+						# 用 , 替换 | 及其两边的空格 ,将其转换为标准 csv 格式
+						gsub => ["message","\s*\|\s*",","]
+						# 替换过后的 message 会比实际上多出一列, 最后一列的内容为 null, 第一行数据后边的空格能被替换,但是之前的空格不会被替换
+						}
+
+						# 按照 csv 格式的日志进行解析
+						csv {
+							separator => ","
+							}
+						# 去除第一行数据之前的空格
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][EB GUN ST. mA]"
+								"column5" => "[columns][EB GUN END mA]"
+								"column6" => "[columns][Dome Temp START C]"
+								"column7" => "[columns][Dome Temp END C]"
+								"column8" => "[columns][DomeHeater2 START C]"
+								"column9" => "[columns][DomeHeater2 END C]"
+								"column10" => "[columns][PRESSURE START Pa]"
+								"column11" => "[columns][PRESSURE END Pa]"
+								"column12" => "[columns][APC Flow START SCCM]"
+								"column13" => "[columns][APC Flow END SCCM]"
+								"column14" => "[columns][TIME sec]"
+								"column15" => "[columns][RATE ST. A/sec]"
+								"column16" => "[columns][RATE END A/sec]"
+								"column17" => "[columns][CRYSTAL THICK. KA]"
+								"column18" => "[columns][CRYSTAL NO]"
+								"column19" => "[columns][CRYSTAL Freq kHz]"
+								"[fields][machine]" => "alias"
+									}
+								# 对 LAYER NO 进行前后去空格处理
+								strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							# 丢弃无关数据
+							drop{}
+							}
+				}
+
+			# 2.镀膜机 A006
+			if "A006" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][EB GUN ST. mA]"
+								"column5" => "[columns][EB GUN END mA]"
+								"column6" => "[columns][CUP H2]"
+								"column7" => "[columns][Dome Temp START C]"
+								"column8" => "[columns][Dome Temp END C]"
+								"column9" => "[columns][PRESSURE START Pa]"
+								"column10" => "[columns][PRESSURE END Pa]"
+								"column11" => "[columns][MFC Flow START SCCM]"
+								"column12" => "[columns][MFC Flow END SCCM]"
+								"column13" => "[columns][TIME sec]"
+								"column14" => "[columns][RATE ST. A/sec]"
+								"column15" => "[columns][RATE END A/sec]"
+								"column16" => "[columns][CRYSTAL THICK. kA]"
+								"column17" => "[columns][CRYSTAL NO]"
+								"column18" => "[columns][CRYSTAL Freq kHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+			# 3.镀膜机 A005
+			if "A005" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][EB1 GUN ST. mA]"
+								"column5" => "[columns][EB1 GUN END mA]"
+								"column6" => "[columns][EB2 GUN ST. mA]"
+								"column7" => "[columns][EB2 GUN END mA]"
+								"column8" => "[columns][CUP H1]"
+								"column9" => "[columns][CUP H2]"
+								"column10" => "[columns][Dome Temp START C]"
+								"column11" => "[columns][Dome Temp END C]"
+								"column12" => "[columns][DomeHeater2 START C]"
+								"column13" => "[columns][DomeHeater2 END C]"
+								"column14" => "[columns][PRESSURE START Pa]"
+								"column15" => "[columns][PRESSURE END Pa]"
+								"column16" => "[columns][APC Flow START SCCM]"
+								"column17" => "[columns][APC Flow END SCCM]"
+								"column18" => "[columns][TIME sec]"
+								"column19" => "[columns][RATE ST. A/sec]"
+								"column20" => "[columns][RATE END A/sec]"
+								"column21" => "[columns][CRYSTAL THICK. kA]"
+								"column22" => "[columns][CRYSTAL NO]"
+								"column23" => "[columns][CRYSTAL Freq kHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 4.镀膜机 A010
+			if "A010" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][FILEM INDEX]"
+								"column12" => "[columns][START LIGHT V V]"
+								"column13" => "[columns][AMP Gain HOM2D]"
+								"column14" => "[columns][AMP Gain HOM2N]"
+								"column15" => "[columns][EB1 GUN ST. mA]"
+								"column16" => "[columns][EB1 GUN END mA]"
+								"column17" => "[columns][EB2 GUN ST. mA]"
+								"column18" => "[columns][EB2 GUN END mA]"
+								"column19" => "[columns][CUP H1]"
+								"column20" => "[columns][CUP H2]"
+								"column21" => "[columns][Dome Temp START C]"
+								"column22" => "[columns][Dome Temp END C]"
+								"column23" => "[columns][Moni. Temp START C]"
+								"column24" => "[columns][Moni. Temp END C]"
+								"column25" => "[columns][PRESSURE START Pa]"
+								"column26" => "[columns][PRESSURE END Pa]"
+								"column27" => "[columns][APC Flow START SCCM]"
+								"column28" => "[columns][APC Flow END SCCM]"
+								"column29" => "[columns][TIME sec]"
+								"column30" => "[columns][RATE ST. A/sec]"
+								"column31" => "[columns][RATE END A/sec]"
+								"column32" => "[columns][CRYSTAL THICK. kA]"
+								"column33" => "[columns][CRYSTAL NO]"
+								"column34" => "[columns][CRYSTAL Freq kHz]"
+								"column35" => "[columns][Auto Gain Val. LIGHT V]"
+								"column36" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column37" => "[columns][Over load Err]"
+								"column38" => "[columns][Rev Chg Timeout Happened]"
+								"column39" => "[columns][1stPeak Not OK Happened]"
+								"column40" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 5.镀膜机 A011
+			if "A011" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][EB1 GUN ST. mA]"
+								"column5" => "[columns][EB1 GUN END mA]"
+								"column6" => "[columns][EB2 GUN ST. mA]"
+								"column7" => "[columns][EB2 GUN END mA]"
+								"column8" => "[columns][CUP H1]"
+								"column9" => "[columns][CUP H2]"
+								"column10" => "[columns][Dome Temp START C]"
+								"column11" => "[columns][Dome Temp END C]"
+								"column12" => "[columns][PRESSURE START Pa]"
+								"column13" => "[columns][PRESSURE END Pa]"
+								"column14" => "[columns][APC Flow START SCCM]"
+								"column15" => "[columns][APC Flow END SCCM]"
+								"column16" => "[columns][TIME sec]"
+								"column17" => "[columns][RATE ST. A/sec]"
+								"column18" => "[columns][RATE END A/sec]"
+								"column19" => "[columns][CRYSTAL THICK. kA]"
+								"column20" => "[columns][CRYSTAL NO]"
+								"column21" => "[columns][CRYSTAL Freq kHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 6.镀膜机 A012
+			if "A012" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][EB GUN ST. mA]"
+								"column5" => "[columns][EB GUN END mA]"
+								"column6" => "[columns][Dome Temp START C]"
+								"column7" => "[columns][Dome Temp END C]"
+								"column8" => "[columns][PRESSURE START Pa]"
+								"column9" => "[columns][PRESSURE END Pa]"
+								"column10" => "[columns][APC Flow START SCCM]"
+								"column11" => "[columns][APC Flow END SCCM]"
+								"column12" => "[columns][TIME sec]"
+								"column13" => "[columns][RATE ST. A/sec]"
+								"column14" => "[columns][RATE END A/sec]"
+								"column15" => "[columns][CRYSTAL THICK. kA]"
+								"column16" => "[columns][CRYSTAL NO]"
+								"column17" => "[columns][CRYSTAL Freq kHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 7.镀膜机 A016 A017 A047 A049 A050
+			if "A016" in [tags] or "A017" in [tags] or "A047" in [tags] or "A049" in [tags] or "A050" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][EB1 POS X %]"
+								"column23" => "[columns][EB1 POS Y %]"
+								"column24" => "[columns][EB2 POS X %]"
+								"column25" => "[columns][EB2 POS Y %]"
+								"column26" => "[columns][CUP H1]"
+								"column27" => "[columns][CUP H2]"
+								"column28" => "[columns][Dome Temp START C]"
+								"column29" => "[columns][Dome Temp END C]"
+								"column30" => "[columns][Moni. Temp START C]"
+								"column31" => "[columns][Moni. Temp END C]"
+								"column32" => "[columns][PRESSURE START Pa]"
+								"column33" => "[columns][PRESSURE END Pa]"
+								"column34" => "[columns][APC Flow START SCCM]"
+								"column35" => "[columns][APC Flow END SCCM]"
+								"column36" => "[columns][TIME sec]"
+								"column37" => "[columns][RATE ST. A/sec]"
+								"column38" => "[columns][RATE END A/sec]"
+								"column39" => "[columns][CRYSTAL THICK. kA]"
+								"column40" => "[columns][CRYSTAL NO]"
+								"column41" => "[columns][CRYSTAL Freq kHz]"
+								"column42" => "[columns][Auto Gain Val. LIGHT V]"
+								"column43" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column44" => "[columns][Over load Err]"
+								"column45" => "[columns][Rev Chg Timeout Happened]"
+								"column46" => "[columns][1stPeak Not OK Happened]"
+								"column47" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+			# 8.镀膜机 A048
+			if "A048" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][EB1 POS X %]"
+								"column11" => "[columns][EB1 POS Y %]"
+								"column12" => "[columns][EB2 POS X %]"
+								"column13" => "[columns][EB2 POS Y %]"
+								"column14" => "[columns][CUP H1]"
+								"column15" => "[columns][CUP H2]"
+								"column16" => "[columns][Dome Temp START C]"
+								"column17" => "[columns][Dome Temp END C]"
+								"column18" => "[columns][PRESSURE START Pa]"
+								"column19" => "[columns][PRESSURE END Pa]"
+								"column20" => "[columns][APC Flow START SCCM]"
+								"column21" => "[columns][APC Flow END SCCM]"
+								"column22" => "[columns][TIME sec]"
+								"column23" => "[columns][RATE ST. A/sec]"
+								"column24" => "[columns][RATE END A/sec]"
+								"column25" => "[columns][CRYSTAL THICK. kA]"
+								"column26" => "[columns][CRYSTAL NO]"
+								"column37" => "[columns][CRYSTAL Frep KHz]"
+								"[fields][machine]" => "alias"
+									}
+								strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							# 丢弃无关数据
+							drop{}
+							}
+				}
+
+			# 9.镀膜机 A135 测试数据
+			if "A135" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][RH ST. A]"
+								"column11" => "[columns][RH END. A]"
+								"column12" => "[columns][EB1 POS X %]"
+								"column13" => "[columns][EB1 POS Y %]"
+								"column14" => "[columns][EB2 POS X %]"
+								"column15" => "[columns][EB2 POS Y %]"
+								"column16" => "[columns][CUP H1]"
+								"column17" => "[columns][CUP H2]"
+								"column18" => "[columns][CUP RH]"
+								"column19" => "[columns][Dome Temp START C]"
+								"column20" => "[columns][Dome Temp END C]"
+								"column21" => "[columns][PRESSURE START Pa]"
+								"column22" => "[columns][PRESSURE END Pa]"
+								"column23" => "[columns][APC Flow START SCCM]"
+								"column24" => "[columns][APC Flow END SCCM]"
+								"column25" => "[columns][TIME sec]"
+								"column26" => "[columns][RATE ST. A/sec]"
+								"column27" => "[columns][RATE END A/sec]"
+								"column28" => "[columns][CRYSTAL THICK. kA]"
+								"column29" => "[columns][CRYSTAL NO]"
+								"column30" => "[columns][CRYSTAL Frep KHz]"
+								"column31" => "[columns][Flow Limit Err]"
+								"column32" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+								strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							# 丢弃无关数据
+							drop{}
+							}
+				}
+
+			# 10.镀膜机 A136
+			if "A136" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][RH ST. A]"
+								"column11" => "[columns][RH END. A]"
+								"column12" => "[columns][EB1 POS X %]"
+								"column13" => "[columns][EB1 POS Y %]"
+								"column14" => "[columns][EB2 POS X %]"
+								"column15" => "[columns][EB2 POS Y %]"
+								"column16" => "[columns][CUP H1]"
+								"column17" => "[columns][CUP H2]"
+								"column18" => "[columns][CUP RH]"
+								"column19" => "[columns][Dome Temp START C]"
+								"column20" => "[columns][Dome Temp END C]"
+								"column21" => "[columns][PRESSURE START Pa]"
+								"column22" => "[columns][PRESSURE END Pa]"
+								"column23" => "[columns][APC Flow START SCCM]"
+								"column24" => "[columns][APC Flow END SCCM]"
+								"column25" => "[columns][TIME sec]"
+								"column26" => "[columns][RATE ST. A/sec]"
+								"column27" => "[columns][RATE END A/sec]"
+								"column28" => "[columns][CRYSTAL THICK. kA]"
+								"column29" => "[columns][CRYSTAL NO]"
+								"column30" => "[columns][CRYSTAL Frep KHz]"
+								"column31" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+								strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							# 丢弃无关数据
+							drop{}
+							}
+				}
+
+			# 11.镀膜机 A137 A139 A142 A165 A166 A168 A169
+			if "A016" in [tags] or "A017" in [tags] or "A047" in [tags] or "A049" in [tags] or "A050" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][Rev Chg Timeout Happened]"
+								"column49" => "[columns][1stPeak Not OK Happened]"
+								"column50" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column51" => "[columns][Flow Limit Err]"
+								"column52" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 12.镀膜机 A138
+			if "A138" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][1stPeak Not OK Happened]"
+								"column49" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column50" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 13.镀膜机 A140 A143 A164 A167
+			if "A140" in [tags] or "A143" in [tags] or "A164" in [tags] or "A167" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][MASK SV. 1]"
+								"column5" => "[columns][MASK SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][RH ST. A]"
+								"column11" => "[columns][RH END. A]"
+								"column12" => "[columns][EB1 POS X %]"
+								"column13" => "[columns][EB1 POS Y %]"
+								"column14" => "[columns][EB2 POS X %]"
+								"column15" => "[columns][EB2 POS Y %]"
+								"column16" => "[columns][CUP H1]"
+								"column17" => "[columns][CUP H2]"
+								"column18" => "[columns][CUP RH]"
+								"column19" => "[columns][Dome Temp START C]"
+								"column20" => "[columns][Dome Temp END C]"
+								"column21" => "[columns][PRESSURE START Pa]"
+								"column22" => "[columns][PRESSURE END Pa]"
+								"column23" => "[columns][APC Flow START SCCM]"
+								"column24" => "[columns][APC Flow END SCCM]"
+								"column25" => "[columns][TIME sec]"
+								"column26" => "[columns][RATE ST. A/sec]"
+								"column27" => "[columns][RATE END A/sec]"
+								"column28" => "[columns][CRYSTAL THICK. kA]"
+								"column29" => "[columns][CRYSTAL NO]"
+								"column30" => "[columns][CRYSTAL Freq kHz]"
+								"column31" => "[columns][Flow Limit Err]"
+								"column32" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 14.镀膜机 A141
+			if "A141" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][Rev Chg Timeout Happened]"
+								"column49"=> "[columns][1stPeak Not OK Happened]"
+								"column50" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 15.镀膜机 A144 A217
+			if "A141" in [tags] or "A217" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][Rev Chg Timeout Happened]"
+								"column49" => "[columns][1stPeak Not OK Happened]"
+								"column50" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column51" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 16.镀膜机 A170 A171 A176 A177 A179
+			if "A170" in [tags] or "A171" in [tags] or "A176" in [tags] or "A177" in [tags] or "A179" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][MASK SV. 1]"
+								"column5" => "[columns][MASK SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][EB1 POS X %]"
+								"column11" => "[columns][EB1 POS Y %]"
+								"column12" => "[columns][EB2 POS X %]"
+								"column13" => "[columns][EB2 POS Y %]"
+								"column14" => "[columns][CUP H1]"
+								"column15" => "[columns][CUP H2]"
+								"column16" => "[columns][Dome Temp START C]"
+								"column17" => "[columns][Dome Temp END C]"
+								"column18" => "[columns][PRESSURE START Pa]"
+								"column19" => "[columns][PRESSURE END Pa]"
+								"column20" => "[columns][APC Flow START SCCM]"
+								"column21" => "[columns][APC Flow END SCCM]"
+								"column22" => "[columns][TIME sec]"
+								"column23" => "[columns][RATE ST. A/sec]"
+								"column24" => "[columns][RATE END A/sec]"
+								"column25" => "[columns][CRYSTAL THICK. kA]"
+								"column26" => "[columns][CRYSTAL NO]"
+								"column27" => "[columns][CRYSTAL Freq kHz]"
+								"column28" => "[columns][Flow Limit Err]"
+								"column29" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 17.镀膜机 A172 A173
+			if "A172" in [tags] or "A173" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][EB1 GUN ST. mA]"
+								"column5" => "[columns][EB1 GUN END mA]"
+								"column6" => "[columns][EB2 GUN ST. mA]"
+								"column7" => "[columns][EB2 GUN END mA]"
+								"column8" => "[columns][CUP H1]"
+								"column9" => "[columns][CUP H2]"
+								"column10" => "[columns][Dome Temp START C]"
+								"column11" => "[columns][Dome Temp END C]"
+								"column12" => "[columns][PRESSURE START Pa]"
+								"column13" => "[columns][PRESSURE END Pa]"
+								"column14" => "[columns][APC Flow START SCCM]"
+								"column15" => "[columns][APC Flow END SCCM]"
+								"column16" => "[columns][TIME sec]"
+								"column17" => "[columns][RATE ST. A/sec]"
+								"column18" => "[columns][RATE END A/sec]"
+								"column19" => "[columns][CRYSTAL THICK. kA]"
+								"column20" => "[columns][CRYSTAL NO]"
+								"column21" => "[columns][CRYSTAL Freq kHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 18.镀膜机 A174
+			if "A174" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][EB1 POS X %]"
+								"column11" => "[columns][EB1 POS Y %]"
+								"column12" => "[columns][EB2 POS X %]"
+								"column13" => "[columns][EB2 POS Y %]"
+								"column14" => "[columns][CUP H1]"
+								"column15" => "[columns][CUP H2]"
+								"column16" => "[columns][Dome Temp START C]"
+								"column17" => "[columns][Dome Temp END C]"
+								"column18" => "[columns][PRESSURE START Pa]"
+								"column19" => "[columns][PRESSURE END Pa]"
+								"column20" => "[columns][APC Flow START SCCM]"
+								"column21" => "[columns][APC Flow END SCCM]"
+								"column22" => "[columns][TIME sec]"
+								"column23" => "[columns][RATE ST. A/sec]"
+								"column24" => "[columns][RATE END A/sec]"
+								"column25" => "[columns][CRYSTAL THICK. kA]"
+								"column26" => "[columns][CRYSTAL NO]"
+								"column27" => "[columns][CRYSTAL Freq kHz]"
+								"column28" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 19.镀膜机 A175
+			if "A175" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][EB1 POS X %]"
+								"column23" => "[columns][EB1 POS Y %]"
+								"column24" => "[columns][EB2 POS X %]"
+								"column25" => "[columns][EB2 POS Y %]"
+								"column26" => "[columns][CUP H1]"
+								"column27" => "[columns][CUP H2]"
+								"column28" => "[columns][Dome Temp START C]"
+								"column29" => "[columns][Dome Temp END C]"
+								"column30" => "[columns][Moni. Temp START C]"
+								"column31" => "[columns][Moni. Temp END C]"
+								"column32" => "[columns][PRESSURE START Pa]"
+								"column33" => "[columns][PRESSURE END Pa]"
+								"column34" => "[columns][APC Flow START SCCM]"
+								"column35" => "[columns][APC Flow END SCCM]"
+								"column36" => "[columns][TIME sec]"
+								"column37" => "[columns][RATE ST. A/sec]"
+								"column38" => "[columns][RATE END A/sec]"
+								"column39" => "[columns][CRYSTAL THICK. kA]"
+								"column40" => "[columns][CRYSTAL NO]"
+								"column41" => "[columns][CRYSTAL Freq kHz]"
+								"column42" => "[columns][Auto Gain Val. LIGHT V]"
+								"column43" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column44" => "[columns][Over load Err]"
+								"column45" => "[columns][Rev Chg Timeout Happened]"
+								"column46" => "[columns][1stPeak Not OK Happened]"
+								"column47" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column48" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 20.镀膜机 A178
+			if "A178" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][EB1 POS X %]"
+								"column11" => "[columns][EB1 POS Y %]"
+								"column12" => "[columns][EB2 POS X %]"
+								"column13" => "[columns][EB2 POS Y %]"
+								"column14" => "[columns][CUP H1]"
+								"column15" => "[columns][CUP H2]"
+								"column16" => "[columns][Dome Temp START C]"
+								"column17" => "[columns][Dome Temp END C]"
+								"column18" => "[columns][PRESSURE START Pa]"
+								"column19" => "[columns][PRESSURE END Pa]"
+								"column20" => "[columns][APC Flow START SCCM]"
+								"column21" => "[columns][APC Flow END SCCM]"
+								"column22" => "[columns][TIME sec]"
+								"column23" => "[columns][RATE ST. A/sec]"
+								"column24" => "[columns][RATE END A/sec]"
+								"column25" => "[columns][CRYSTAL THICK. kA]"
+								"column26" => "[columns][CRYSTAL NO]"
+								"column27" => "[columns][CRYSTAL Freq kHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 21.镀膜机 A219
+			if "A219" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][CUP H1]"
+								"column25" => "[columns][CUP H2]"
+								"column26" => "[columns][CUP RH]"
+								"column27" => "[columns][Dome Temp START C]"
+								"column28" => "[columns][Dome Temp END C]"
+								"column29" => "[columns][Moni. Temp START C]"
+								"column30" => "[columns][Moni. Temp END C]"
+								"column31" => "[columns][PRESSURE START Pa]"
+								"column32" => "[columns][PRESSURE END Pa]"
+								"column33" => "[columns][APC Flow START SCCM]"
+								"column34" => "[columns][APC Flow END SCCM]"
+								"column35" => "[columns][TIME sec]"
+								"column36" => "[columns][RATE ST. A/sec]"
+								"column37" => "[columns][RATE END A/sec]"
+								"column38" => "[columns][CRYSTAL THICK. kA]"
+								"column39" => "[columns][CRYSTAL NO]"
+								"column40" => "[columns][CRYSTAL Freq kHz]"
+								"column41" => "[columns][Auto Gain Val. LIGHT V]"
+								"column42" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column43" => "[columns][Over load Err]"
+								"column44" => "[columns][Rev Chg Timeout Happened]"
+								"column45" => "[columns][1stPeak Not OK Happened]"
+								"column46" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column47" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 22.镀膜机 B018
+			if "B018" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][FILEM INDEX]"
+								"column12" => "[columns][START LIGHT V V]"
+								"column13" => "[columns][AMP Gain HOM2D]"
+								"column14" => "[columns][AMP Gain HOM2N]"
+								"column15" => "[columns][EB1 GUN ST. mA]"
+								"column16" => "[columns][EB1 GUN END mA]"
+								"column17" => "[columns][EB2 GUN ST. mA]"
+								"column18" => "[columns][EB2 GUN END mA]"
+								"column19" => "[columns][EB1 POS X %]"
+								"column20" => "[columns][EB1 POS Y %]"
+								"column21" => "[columns][EB2 POS X %]"
+								"column22" => "[columns][EB2 POS Y %]"
+								"column23" => "[columns][CUP H1]"
+								"column24" => "[columns][CUP H2]"
+								"column25" => "[columns][Dome Temp START C]"
+								"column26" => "[columns][Dome Temp END C]"
+								"column27" => "[columns][Moni. Temp START C]"
+								"column28" => "[columns][Moni. Temp END C]"
+								"column29" => "[columns][PRESSURE START Pa]"
+								"column30" => "[columns][PRESSURE END Pa]"
+								"column31" => "[columns][APC Flow START SCCM]"
+								"column32" => "[columns][APC Flow END SCCM]"
+								"column33" => "[columns][TIME sec]"
+								"column34" => "[columns][RATE ST. A/sec]"
+								"column35" => "[columns][RATE END A/sec]"
+								"column36" => "[columns][CRYSTAL THICK. kA]"
+								"column37" => "[columns][CRYSTAL NO]"
+								"column38" => "[columns][CRYSTAL Freq kHz]"
+								"column39" => "[columns][Auto Gain Val. LIGHT V]"
+								"column40" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column41" => "[columns][Over load Err]"
+								"column42" => "[columns][Rev Chg Timeout Happened]"
+								"column43" => "[columns][1stPeak Not OK Happened]"
+								"column44" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 23.镀膜机 B021
+			if "B021" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][EB1 POS X %]"
+								"column11" => "[columns][EB1 POS Y %]"
+								"column12" => "[columns][EB2 POS X %]"
+								"column13" => "[columns][EB2 POS Y %]"
+								"column14" => "[columns][CUP H1]"
+								"column15" => "[columns][CUP H2]"
+								"column16" => "[columns][Dome Temp START C]"
+								"column17" => "[columns][Dome Temp END C]"
+								"column18" => "[columns][PRESSURE START Pa]"
+								"column19" => "[columns][PRESSURE END Pa]"
+								"column20" => "[columns][APC Flow START SCCM]"
+								"column21" => "[columns][APC Flow END SCCM]"
+								"column22" => "[columns][TIME sec]"
+								"column23" => "[columns][RATE ST. A/sec]"
+								"column24" => "[columns][RATE END A/sec]"
+								"column25" => "[columns][CRYSTAL THICK. kA]"
+								"column26" => "[columns][CRYSTAL NO]"
+								"column27" => "[columns][CRYSTAL Freq kHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 24.镀膜机 B022 B023 B026 C043
+			if "B022" in [tags] or "B023" in [tags] or "B026" in [tags] or "C043" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][EB1 POS X %]"
+								"column23" => "[columns][EB1 POS Y %]"
+								"column24" => "[columns][EB2 POS X %]"
+								"column25" => "[columns][EB2 POS Y %]"
+								"column26" => "[columns][CUP H1]"
+								"column27" => "[columns][CUP H2]"
+								"column28" => "[columns][Dome Temp START C]"
+								"column29" => "[columns][Dome Temp END C]"
+								"column30" => "[columns][Moni. Temp START C]"
+								"column31" => "[columns][Moni. Temp END C]"
+								"column32" => "[columns][PRESSURE START Pa]"
+								"column33" => "[columns][PRESSURE END Pa]"
+								"column34" => "[columns][APC Flow START SCCM]"
+								"column35" => "[columns][APC Flow END SCCM]"
+								"column36" => "[columns][MFC Flow START SCCM]"
+								"column37" => "[columns][MFC Flow END SCCM]"
+								"column38" => "[columns][TIME sec]"
+								"column39" => "[columns][RATE ST. A/sec]"
+								"column40" => "[columns][RATE END A/sec]"
+								"column41" => "[columns][CRYSTAL THICK. kA]"
+								"column42" => "[columns][CRYSTAL NO]"
+								"column43" => "[columns][CRYSTAL Freq kHz]"
+								"column44" => "[columns][Auto Gain Val. LIGHT V]"
+								"column45" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column46" => "[columns][Over load Err]"
+								"column47" => "[columns][Rev Chg Timeout Happened]"
+								"column48" => "[columns][1stPeak Not OK Happened]"
+								"column49" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 25.镀膜机 B025
+			if "B025" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][EB1 POS X %]"
+								"column23" => "[columns][EB1 POS Y %]"
+								"column24" => "[columns][EB2 POS X %]"
+								"column25" => "[columns][EB2 POS Y %]"
+								"column26" => "[columns][Dome Temp START C]"
+								"column27" => "[columns][Dome Temp END C]"
+								"column28" => "[columns][Moni. Temp START C]"
+								"column29" => "[columns][Moni. Temp END C]"
+								"column30" => "[columns][PRESSURE START Pa]"
+								"column31" => "[columns][PRESSURE END Pa]"
+								"column32" => "[columns][APC Flow START SCCM]"
+								"column33" => "[columns][APC Flow END SCCM]"
+								"column34" => "[columns][MFC Flow START SCCM]"
+								"column35" => "[columns][MFC Flow END SCCM]"
+								"column36" => "[columns][TIME sec]"
+								"column37" => "[columns][RATE ST. A/sec]"
+								"column38" => "[columns][RATE END A/sec]"
+								"column39" => "[columns][CRYSTAL THICK. kA]"
+								"column40" => "[columns][CRYSTAL NO]"
+								"column41" => "[columns][CRYSTAL Freq kHz]"
+								"column42" => "[columns][Auto Gain Val. LIGHT V]"
+								"column43" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column44" => "[columns][Over load Err]"
+								"column45" => "[columns][Rev Chg Timeout Happened]"
+								"column46" => "[columns][1stPeak Not OK Happened]"
+								"column47" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 26.镀膜机 C034 C037
+			if "C034" in [tags] or "C037" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][EB1 POS X %]"
+								"column23" => "[columns][EB1 POS Y %]"
+								"column24" => "[columns][EB2 POS X %]"
+								"column25" => "[columns][EB2 POS Y %]"
+								"column26" => "[columns][CUP H1]"
+								"column27" => "[columns][CUP H2]"
+								"column28" => "[columns][Dome Temp START C]"
+								"column29" => "[columns][Dome Temp END C]"
+								"column30" => "[columns][Moni. Temp START C]"
+								"column31" => "[columns][Moni. Temp END C]"
+								"column32" => "[columns][PRESSURE START Pa]"
+								"column33" => "[columns][PRESSURE END Pa]"
+								"column34" => "[columns][APC Flow START SCCM]"
+								"column35" => "[columns][APC Flow END SCCM]"
+								"column36" => "[columns][TIME sec]"
+								"column37" => "[columns][RATE ST. A/sec]"
+								"column38" => "[columns][RATE END A/sec]"
+								"column39" => "[columns][CRYSTAL THICK. kA]"
+								"column40" => "[columns][CRYSTAL NO]"
+								"column41" => "[columns][CRYSTAL Freq kHz]"
+								"column42" => "[columns][Auto Gain Val. LIGHT V]"
+								"column43" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column44" => "[columns][Over load Err]"
+								"column45" => "[columns][Rev Chg Timeout Happened]"
+								"column46" => "[columns][1stPeak Not OK Happened]"
+								"column47" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 27.镀膜机 C041
+			if "C041" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][EB1 POS X %]"
+								"column11" => "[columns][EB1 POS Y %]"
+								"column12" => "[columns][EB2 POS X %]"
+								"column13" => "[columns][EB2 POS Y %]"
+								"column14" => "[columns][CUP H1]"
+								"column15" => "[columns][CUP H2]"
+								"column16" => "[columns][Dome Temp START C]"
+								"column17" => "[columns][Dome Temp END C]"
+								"column18" => "[columns][PRESSURE START Pa]"
+								"column19" => "[columns][PRESSURE END Pa]"
+								"column20" => "[columns][APC Flow START SCCM]"
+								"column21" => "[columns][APC Flow END SCCM]"
+								"column22" => "[columns][MFC Flow START SCCM]"
+								"column23" => "[columns][MFC Flow END SCCM]"
+								"column24" => "[columns][TIME sec]"
+								"column25" => "[columns][RATE ST. A/sec]"
+								"column26" => "[columns][RATE END A/sec]"
+								"column27" => "[columns][CRYSTAL THICK. kA]"
+								"column28" => "[columns][CRYSTAL NO]"
+								"column29" => "[columns][CRYSTAL Frep KHz]"
+								"column30" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 28.镀膜机 C042
+			if "C041" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][EB1 GUN ST. mA]"
+								"column5" => "[columns][EB1 GUN END mA]"
+								"column6" => "[columns][EB2 GUN ST. mA]"
+								"column7" => "[columns][EB2 GUN END mA]"
+								"column8" => "[columns][EB1 POS X %]"
+								"column9" => "[columns][EB1 POS Y %]"
+								"column10" => "[columns][EB2 POS X %]"
+								"column11" => "[columns][EB2 POS Y %]"
+								"column12" => "[columns][CUP H1]"
+								"column13" => "[columns][CUP H2]"
+								"column14" => "[columns][Dome Temp START C]"
+								"column15" => "[columns][Dome Temp END C]"
+								"column16" => "[columns][PRESSURE START Pa]"
+								"column17" => "[columns][PRESSURE END Pa]"
+								"column18" => "[columns][APC Flow START SCCM]"
+								"column19" => "[columns][APC Flow END SCCM]"
+								"column20" => "[columns][MFC Flow START SCCM]"
+								"column21" => "[columns][MFC Flow END SCCM]"
+								"column22" => "[columns][TIME sec]"
+								"column23" => "[columns][RATE ST. A/sec]"
+								"column24" => "[columns][RATE END A/sec]"
+								"column25" => "[columns][CRYSTAL THICK. kA]"
+								"column26" => "[columns][CRYSTAL NO]"
+								"column27" => "[columns][CRYSTAL Frep KHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 29.镀膜机 C110
+			if "C110" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][Dome Temp START C]"
+								"column31" => "[columns][Dome Temp END C]"
+								"column32" => "[columns][Moni. Temp START C]"
+								"column33" => "[columns][Moni. Temp END C]"
+								"column34" => "[columns][PRESSURE START Pa]"
+								"column35" => "[columns][PRESSURE END Pa]"
+								"column36" => "[columns][APC Flow START SCCM]"
+								"column37" => "[columns][APC Flow END SCCM]"
+								"column38" => "[columns][TIME sec]"
+								"column39" => "[columns][RATE ST. A/sec]"
+								"column40" => "[columns][RATE END A/sec]"
+								"column41" => "[columns][CRYSTAL THICK. kA]"
+								"column42" => "[columns][CRYSTAL NO]"
+								"column43" => "[columns][CRYSTAL Freq kHz]"
+								"column44" => "[columns][Auto Gain Val. LIGHT V]"
+								"column45" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column46" => "[columns][Over load Err]"
+								"column47" => "[columns][Rev Chg Timeout Happened]"
+								"column48" => "[columns][1stPeak Not OK Happened]"
+								"column49" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 30.镀膜机 E121 E123 E127 E131 E133 E134 E300
+			if "E121" in [tags] or "E123" in [tags] or "E127" in [tags] or "E131" in [tags] or "E133" in [tags]or "E134" in [tags] or "E300" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][Rev Chg Timeout Happened]"
+								"column49" => "[columns][1stPeak Not OK Happened]"
+								"column50" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column51" => "[columns][Flow Limit Err]"
+								"column52" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 31.镀膜机 E122 E124 E128 E129
+			if "E122" in [tags] or "E124" in [tags] or "E128" in [tags] or "E129" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][Rev Chg Timeout Happened]"
+								"column49" => "[columns][1stPeak Not OK Happened]"
+								"column50" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column51" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 32.镀膜机 E125
+			if "E125" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][RH ST. A]"
+								"column11" => "[columns][RH END. A]"
+								"column12" => "[columns][EB1 POS X %]"
+								"column13" => "[columns][EB1 POS Y %]"
+								"column14" => "[columns][EB2 POS X %]"
+								"column15" => "[columns][EB2 POS Y %]"
+								"column16" => "[columns][CUP H1]"
+								"column17" => "[columns][CUP H2]"
+								"column18" => "[columns][CUP RH]"
+								"column19" => "[columns][Dome Temp START C]"
+								"column20" => "[columns][Dome Temp END C]"
+								"column21" => "[columns][PRESSURE START Pa]"
+								"column22" => "[columns][PRESSURE END Pa]"
+								"column23" => "[columns][APC Flow START SCCM]"
+								"column24" => "[columns][APC Flow END SCCM]"
+								"column25" => "[columns][TIME sec]"
+								"column26" => "[columns][RATE ST. A/sec]"
+								"column27" => "[columns][RATE END A/sec]"
+								"column28" => "[columns][CRYSTAL THICK. kA]"
+								"column29" => "[columns][CRYSTAL NO]"
+								"column30" => "[columns][CRYSTAL Frep KHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 33.镀膜机 E126
+			if "E126" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][RH ST. A]"
+								"column11" => "[columns][RH END. A]"
+								"column12" => "[columns][EB1 POS X %]"
+								"column13" => "[columns][EB1 POS Y %]"
+								"column14" => "[columns][EB2 POS X %]"
+								"column15" => "[columns][EB2 POS Y %]"
+								"column16" => "[columns][CUP H1]"
+								"column17" => "[columns][CUP H2]"
+								"column18" => "[columns][CUP RH]"
+								"column19" => "[columns][Dome Temp START C]"
+								"column20" => "[columns][Dome Temp END C]"
+								"column21" => "[columns][PRESSURE START Pa]"
+								"column22" => "[columns][PRESSURE END Pa]"
+								"column23" => "[columns][APC Flow START SCCM]"
+								"column24" => "[columns][APC Flow END SCCM]"
+								"column25" => "[columns][TIME sec]"
+								"column26" => "[columns][RATE ST. A/sec]"
+								"column27" => "[columns][RATE END A/sec]"
+								"column28" => "[columns][CRYSTAL THICK. kA]"
+								"column29" => "[columns][CRYSTAL NO]"
+								"column30" => "[columns][CRYSTAL Frep KHz]"
+								"column31" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 34.镀膜机 E132
+			if "E132" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][Mask SV. 1]"
+								"column5" => "[columns][Mask SV. 2]"
+								"column6" => "[columns][EB1 GUN ST. mA]"
+								"column7" => "[columns][EB1 GUN END mA]"
+								"column8" => "[columns][EB2 GUN ST. mA]"
+								"column9" => "[columns][EB2 GUN END mA]"
+								"column10" => "[columns][RH ST. A]"
+								"column11" => "[columns][RH END. A]"
+								"column12" => "[columns][EB1 POS X %]"
+								"column13" => "[columns][EB1 POS Y %]"
+								"column14" => "[columns][EB2 POS X %]"
+								"column15" => "[columns][EB2 POS Y %]"
+								"column16" => "[columns][CUP H1]"
+								"column17" => "[columns][CUP H2]"
+								"column18" => "[columns][CUP RH]"
+								"column19" => "[columns][Dome Temp START C]"
+								"column20" => "[columns][Dome Temp END C]"
+								"column21" => "[columns][PRESSURE START Pa]"
+								"column22" => "[columns][PRESSURE END Pa]"
+								"column23" => "[columns][APC Flow START SCCM]"
+								"column24" => "[columns][APC Flow END SCCM]"
+								"column25" => "[columns][TIME sec]"
+								"column26" => "[columns][RATE ST. A/sec]"
+								"column27" => "[columns][RATE END A/sec]"
+								"column28" => "[columns][CRYSTAL THICK. kA]"
+								"column29" => "[columns][CRYSTAL NO]"
+								"column30" => "[columns][CRYSTAL Frep KHz]"
+								"column31" => "[columns][Flow Limit Err]"
+								"column32" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 35.镀膜机 F112 F146
+			if "F112" in [tags] or "F146" in [tags] {
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][Rev Chg Timeout Happened]"
+								"column49" => "[columns][1stPeak Not OK Happened]"
+								"column50" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column51" => "[columns][Flow Limit Err]"
+								"column52" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 36.镀膜机 F145 F148
+			if "F145" in [tags] or "F148" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][FILEM INDEX]"
+								"column12" => "[columns][START LIGHT V V]"
+								"column13" => "[columns][AMP Gain HOM2D]"
+								"column14" => "[columns][AMP Gain HOM2N]"
+								"column15" => "[columns][EB1 GUN ST. mA]"
+								"column16" => "[columns][EB1 GUN END mA]"
+								"column17" => "[columns][EB2 GUN ST. mA]"
+								"column18" => "[columns][EB2 GUN END mA]"
+								"column19" => "[columns][RH ST. A]"
+								"column20" => "[columns][RH END. A]"
+								"column21" => "[columns][EB1 POS X %]"
+								"column22" => "[columns][EB1 POS Y %]"
+								"column23" => "[columns][EB2 POS X %]"
+								"column24" => "[columns][EB2 POS Y %]"
+								"column25" => "[columns][CUP H1]"
+								"column26" => "[columns][CUP H2]"
+								"column27" => "[columns][CUP RH]"
+								"column28" => "[columns][Dome Temp START C]"
+								"column29" => "[columns][Dome Temp END C]"
+								"column30" => "[columns][Moni. Temp START C]"
+								"column31" => "[columns][Moni. Temp END C]"
+								"column32" => "[columns][PRESSURE START Pa]"
+								"column33" => "[columns][PRESSURE END Pa]"
+								"column34" => "[columns][APC Flow START SCCM]"
+								"column35" => "[columns][APC Flow END SCCM]"
+								"column36" => "[columns][TIME sec]"
+								"column37" => "[columns][RATE ST. A/sec]"
+								"column38" => "[columns][RATE END A/sec]"
+								"column39" => "[columns][CRYSTAL THICK. kA]"
+								"column40" => "[columns][CRYSTAL NO]"
+								"column41" => "[columns][CRYSTAL Freq kHz]"
+								"column42" => "[columns][Auto Gain Val. LIGHT V]"
+								"column43" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column44" => "[columns][Over load Err]"
+								"column45" => "[columns][Rev Chg Timeout Happened]"
+								"column46" => "[columns][1stPeak Not OK Happened]"
+								"column47" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column48" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 37.镀膜机 F147
+			if "F147" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][FILEM INDEX]"
+								"column12" => "[columns][START LIGHT V V]"
+								"column13" => "[columns][AMP Gain HOM2D]"
+								"column14" => "[columns][AMP Gain HOM2N]"
+								"column15" => "[columns][EB1 GUN ST. mA]"
+								"column16" => "[columns][EB1 GUN END mA]"
+								"column17" => "[columns][EB2 GUN ST. mA]"
+								"column18" => "[columns][EB2 GUN END mA]"
+								"column19" => "[columns][RH ST. A]"
+								"column20" => "[columns][RH END. A]"
+								"column21" => "[columns][CUP H1]"
+								"column22" => "[columns][CUP H2]"
+								"column23" => "[columns][CUP RH]"
+								"column24" => "[columns][Dome Temp START C]"
+								"column25" => "[columns][Dome Temp END C]"
+								"column26" => "[columns][Moni. Temp START C]"
+								"column27" => "[columns][Moni. Temp END C]"
+								"column28" => "[columns][PRESSURE START Pa]"
+								"column29" => "[columns][PRESSURE END Pa]"
+								"column30" => "[columns][APC Flow START SCCM]"
+								"column31" => "[columns][APC Flow END SCCM]"
+								"column32" => "[columns][TIME sec]"
+								"column33" => "[columns][RATE ST. A/sec]"
+								"column34" => "[columns][RATE END A/sec]"
+								"column35" => "[columns][CRYSTAL THICK. kA]"
+								"column36" => "[columns][CRYSTAL NO]"
+								"column37" => "[columns][CRYSTAL Freq kHz]"
+								"column38" => "[columns][Auto Gain Val. LIGHT V]"
+								"column39" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column40" => "[columns][Over load Err]"
+								"column41" => "[columns][Rev Chg Timeout Happened]"
+								"column42" => "[columns][1stPeak Not OK Happened]"
+								"column43" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 38.镀膜机 F149
+			if "F149" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][Rev Chg Timeout Happened]"
+								"column49" => "[columns][1stPeak Not OK Happened]"
+								"column50" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 39.镀膜机 F150
+			if "F150" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][FILEM INDEX]"
+								"column12" => "[columns][START LIGHT V V]"
+								"column13" => "[columns][AMP Gain HOM2D]"
+								"column14" => "[columns][AMP Gain HOM2N]"
+								"column15" => "[columns][EB1 GUN ST. mA]"
+								"column16" => "[columns][EB1 GUN END mA]"
+								"column17" => "[columns][EB2 GUN ST. mA]"
+								"column18" => "[columns][EB2 GUN END mA]"
+								"column19" => "[columns][RH ST. A]"
+								"column20" => "[columns][RH END. A]"
+								"column21" => "[columns][EB1 POS X %]"
+								"column22" => "[columns][EB1 POS Y %]"
+								"column23" => "[columns][EB2 POS X %]"
+								"column24" => "[columns][EB2 POS Y %]"
+								"column25" => "[columns][CUP H1]"
+								"column26" => "[columns][CUP H2]"
+								"column27" => "[columns][CUP RH]"
+								"column28" => "[columns][Dome Temp START C]"
+								"column29" => "[columns][Dome Temp END C]"
+								"column30" => "[columns][Moni. Temp START C]"
+								"column31" => "[columns][Moni. Temp END C]"
+								"column32" => "[columns][PRESSURE START Pa]"
+								"column33" => "[columns][PRESSURE END Pa]"
+								"column34" => "[columns][APC Flow START SCCM]"
+								"column35" => "[columns][APC Flow END SCCM]"
+								"column36" => "[columns][TIME sec]"
+								"column37" => "[columns][RATE ST. A/sec]"
+								"column38" => "[columns][RATE END A/sec]"
+								"column39" => "[columns][CRYSTAL THICK. kA]"
+								"column40" => "[columns][CRYSTAL NO]"
+								"column41" => "[columns][CRYSTAL Freq kHz]"
+								"column42" => "[columns][Auto Gain Val. LIGHT V]"
+								"column43" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column44" => "[columns][Over load Err]"
+								"column45" => "[columns][Rev Chg Timeout Happened]"
+								"column46" => "[columns][1stPeak Not OK Happened]"
+								"column47" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 40.镀膜机 F151
+			if "F151" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][LIGHT Aim.SV %]"
+								"column12" => "[columns][MASK SV. 1]"
+								"column13" => "[columns][MASK SV. 2]"
+								"column14" => "[columns][FILEM INDEX]"
+								"column15" => "[columns][START LIGHT V V]"
+								"column16" => "[columns][AMP Gain HOM2D]"
+								"column17" => "[columns][AMP Gain HOM2N]"
+								"column18" => "[columns][EB1 GUN ST. mA]"
+								"column19" => "[columns][EB1 GUN END mA]"
+								"column20" => "[columns][EB2 GUN ST. mA]"
+								"column21" => "[columns][EB2 GUN END mA]"
+								"column22" => "[columns][RH ST. A]"
+								"column23" => "[columns][RH END. A]"
+								"column24" => "[columns][EB1 POS X %]"
+								"column25" => "[columns][EB1 POS Y %]"
+								"column26" => "[columns][EB2 POS X %]"
+								"column27" => "[columns][EB2 POS Y %]"
+								"column28" => "[columns][CUP H1]"
+								"column29" => "[columns][CUP H2]"
+								"column30" => "[columns][CUP RH]"
+								"column31" => "[columns][Dome Temp START C]"
+								"column32" => "[columns][Dome Temp END C]"
+								"column33" => "[columns][Moni. Temp START C]"
+								"column34" => "[columns][Moni. Temp END C]"
+								"column35" => "[columns][PRESSURE START Pa]"
+								"column36" => "[columns][PRESSURE END Pa]"
+								"column37" => "[columns][APC Flow START SCCM]"
+								"column38" => "[columns][APC Flow END SCCM]"
+								"column39" => "[columns][TIME sec]"
+								"column40" => "[columns][RATE ST. A/sec]"
+								"column41" => "[columns][RATE END A/sec]"
+								"column42" => "[columns][CRYSTAL THICK. kA]"
+								"column43" => "[columns][CRYSTAL NO]"
+								"column44" => "[columns][CRYSTAL Freq kHz]"
+								"column45" => "[columns][Auto Gain Val. LIGHT V]"
+								"column46" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column47" => "[columns][Over load Err]"
+								"column48" => "[columns][Rev Chg Timeout Happened]"
+								"column49" => "[columns][1stPeak Not OK Happened]"
+								"column50" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"column51" => "[columns][Evap Src Shutter Open]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 41.镀膜机 F152 H111
+			if "F152" in [tags] or "H111" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][LIGHT DIR]"
+								"column5" => "[columns][WAVELEN nm]"
+								"column6" => "[columns][MG No.]"
+								"column7" => "[columns][PEAK NO]"
+								"column8" => "[columns][LIGHT VALUE START1 %]"
+								"column9" => "[columns][LIGHT VALUE START2 %]"
+								"column10" => "[columns][LIGHT VALUE STOP %]"
+								"column11" => "[columns][FILEM INDEX]"
+								"column12" => "[columns][START LIGHT V V]"
+								"column13" => "[columns][AMP Gain HOM2D]"
+								"column14" => "[columns][AMP Gain HOM2N]"
+								"column15" => "[columns][EB1 GUN ST. mA]"
+								"column16" => "[columns][EB1 GUN END mA]"
+								"column17" => "[columns][EB2 GUN ST. mA]"
+								"column18" => "[columns][EB2 GUN END mA]"
+								"column19" => "[columns][RH ST. A]"
+								"column20" => "[columns][RH END. A]"
+								"column21" => "[columns][EB1 POS X %]"
+								"column22" => "[columns][EB1 POS Y %]"
+								"column23" => "[columns][EB2 POS X %]"
+								"column24" => "[columns][EB2 POS Y %]"
+								"column25" => "[columns][CUP H1]"
+								"column26" => "[columns][CUP H2]"
+								"column27" => "[columns][CUP RH]"
+								"column28" => "[columns][Dome Temp START C]"
+								"column29" => "[columns][Dome Temp END C]"
+								"column30" => "[columns][Moni. Temp START C]"
+								"column31" => "[columns][Moni. Temp END C]"
+								"column32" => "[columns][PRESSURE START Pa]"
+								"column33" => "[columns][PRESSURE END Pa]"
+								"column34" => "[columns][APC Flow START SCCM]"
+								"column35" => "[columns][APC Flow END SCCM]"
+								"column36" => "[columns][TIME sec]"
+								"column37" => "[columns][RATE ST. A/sec]"
+								"column38" => "[columns][RATE END A/sec]"
+								"column39" => "[columns][CRYSTAL THICK. kA]"
+								"column40" => "[columns][CRYSTAL NO]"
+								"column41" => "[columns][CRYSTAL Freq kHz]"
+								"column42" => "[columns][Auto Gain Val. LIGHT V]"
+								"column43" => "[columns][Auto Gain Val. Gain HOM2N]"
+								"column44" => "[columns][Over load Err]"
+								"column45" => "[columns][Rev Chg Timeout Happened]"
+								"column46" => "[columns][1stPeak Not OK Happened]"
+								"column47" => "[columns][ABNORMAL LIGHT Chg. Happen Time]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+
+			# 41.镀膜机 F153
+			if "F153" in [tags]{
+					if([message]=~ "^\s*[0-9]+\s*\|"){
+						mutate {
+						gsub => ["message","\s*\|\s*",","]
+						}
+						csv {
+							separator => ","
+							}
+						mutate {
+							rename => {
+								"column1" => "[columns][LAYER NO]"
+								"column2" => "[columns][MATERIAL NAME]"
+								"column3" => "[columns][CONTROL TYPE]"
+								"column4" => "[columns][EB1 GUN ST. mA]"
+								"column5" => "[columns][EB1 GUN END mA]"
+								"column6" => "[columns][EB2 GUN ST. mA]"
+								"column7" => "[columns][EB2 GUN END mA]"
+								"column8" => "[columns][RH ST. A]"
+								"column9" => "[columns][RH END. A]"
+								"column10" => "[columns][EB1 POS X %]"
+								"column11" => "[columns][EB1 POS Y %]"
+								"column12" => "[columns][EB2 POS X %]"
+								"column13" => "[columns][EB2 POS Y %]"
+								"column14" => "[columns][CUP H1]"
+								"column15" => "[columns][CUP H2]"
+								"column16" => "[columns][CUP RH]"
+								"column17" => "[columns][Dome Temp START C]"
+								"column18" => "[columns][Dome Temp END C]"
+								"column19" => "[columns][PRESSURE START Pa]"
+								"column20" => "[columns][PRESSURE END Pa]"
+								"column21" => "[columns][APC Flow START SCCM]"
+								"column22" => "[columns][APC Flow END SCCM]"
+								"column23" => "[columns][TIME sec]"
+								"column24" => "[columns][RATE ST. A/sec]"
+								"column25" => "[columns][RATE END A/sec]"
+								"column26" => "[columns][CRYSTAL THICK. kA]"
+								"column27" => "[columns][CRYSTAL NO]"
+								"column28" => "[columns][CRYSTAL Frep KHz]"
+								"[fields][machine]" => "alias"
+									}
+							strip => ["[columns][LAYER NO]"]
+								}
+						}else{
+							drop{}
+							}
+				}
+}
+
+# 输出
+output {
+	file {
+        path => "D:/file/to/txtoutput/output13.log"
+		}
+}
