@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trx>
+    <trx_name>EPMSUnitStatusChg</trx_name>
+    <action_type>mgnt</action_type>
+    <log_id>20200512093441751</log_id>
+    <site>SJ004</site>
+    <parea>A_AREA</parea>
+    <line_id>LINE_01</line_id>
+    <operation>OP_01</operation>
+    <unit_id>UNIT_01</unit_id>
+    <eqp_id>B018</eqp_id>
+    <remote_mode></remote_mode>
+    <unit_status>RUN</unit_status>
+    <reason_code></reason_code>
+    <reason_message></reason_message>
+    <user_id>ADMIN</user_id>
+    <status_change_time>637248728780830000</status_change_time>
+    <is_real_down>Y</is_real_down>
+</trx>

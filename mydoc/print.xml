@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<label>
+    <message_id>Label_Id</message_id>
+    <label_id>SJ_PKG</label_id>
+    <label_ver>1.0.0</label_ver>
+    <content_header>
+        <print_code></print_code>
+    </content_header>
+    <content_list>
+        <content_info>
+            <index>01</index>
+            <name>PKG_ID</name>
+            <layout_type>Text</layout_type>
+            <print_code>$Print_code$</print_code>
+            <return_attr>pkg_id</return_attr>
+            <bartender_attr>PKG_ID</bartender_attr>
+            <bartender_return_attr></bartender_return_attr>
+            <return_attr_length></return_attr_length>
+            <print_data>
+                <print_data_seq>1</print_data_seq>
+                <print_data_type>Attribute</print_data_type>
+                <print_data_length/>
+                <print_data_name>vendor_code</print_data_name>
+            </print_data>
+            <print_data>
+                <print_data_seq>2</print_data_seq>
+                <print_data_type>DateFormat</print_data_type>
+                <print_data_length/>
+                <print_data_name>getDate_YY</print_data_name>
+            </print_data>
+            <print_data>
+                <print_data_seq>3</print_data_seq>
+                <print_data_type>DateFormat</print_data_type>
+                <print_data_length/>
+                <print_data_name>getDate_MM</print_data_name>
+            </print_data>
+            <print_data>
+                <print_data_seq>4</print_data_seq>
+                <print_data_type>DateFormat</print_data_type>
+                <print_data_length/>
+                <print_data_name>getDate_DD</print_data_name>
+            </print_data>
+            <print_data>
+                <print_data_seq>5</print_data_seq>
+                <print_data_type>Element</print_data_type>
+                <print_data_length/>
+                <print_data_name>SerialNo</print_data_name>
+            </print_data>
+            <accumulate_base>
+                $Attributevendor_code$$DateFormat:getDate_YY$$DateFormat:getDate_MM$$DateFormat:getDate_DD$$SerialNo:SN_10#4$
+            </accumulate_base>
+            <accumulate_type>manul</accumulate_type>
+            <accumulate_source/>
+            <reprint_data_format>$Attribute:pkg_id$</reprint_data_format>
+
+            <index>02</index>
+            <name>qr_code</name>
+
+            <layout_type>Barcode</layout_type>
+
+
+            <print_code>$Print_code$</print_code>
+
+            <bartender_attr>QR_CODE</bartender_attr>
+            
+            <bartender_return_attr></bartender_return_attr>
+
+            <return_attr>qr_code</return_attr>
+
+            <print_data>
+
+                <print_data_seq>1</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>--</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>2</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>|</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>3</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>vendor_code</print_data_name>
+
+            </print_data>
+            <print_data>
+
+                <print_data_seq>4</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>|</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>5</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>part_no</print_data_name>
+
+            </print_data>
+            <print_data>
+
+                <print_data_seq>6</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>|</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>7</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>pkg_qty</print_data_name>
+
+            </print_data>
+            <print_data>
+
+                <print_data_seq>8</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>|</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>9</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>mfg_date</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>10</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>|</print_data_name>
+
+            </print_data>
+
+
+            <print_data>
+
+                <print_data_seq>11</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>expiry_date</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>12</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>|</print_data_name>
+
+            </print_data>
+
+
+            <print_data>
+
+                <print_data_seq>13</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>vendor_code</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>14</print_data_seq>
+
+                <print_data_type>DateFormat</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>getDate_YY</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>15</print_data_seq>
+
+                <print_data_type>DateFormat</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>getDate_MM</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>16</print_data_seq>
+
+                <print_data_type>DateFormat</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>getDate_DD</print_data_name>
+
+            </print_data>
+
+
+            <print_data>
+
+                <print_data_seq>17</print_data_seq>
+
+                <print_data_type>Element</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>SerialNo</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>18</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>|</print_data_name>
+
+            </print_data>
+
+
+            <print_data>
+
+                <print_data_seq>19</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>|</print_data_name>
+
+            </print_data>
+
+            <print_data>
+
+                <print_data_seq>20</print_data_seq>
+
+                <print_data_type>Fixed</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>--</print_data_name>
+
+            </print_data>
+
+            <accumulate_base>
+                $fixed:--$$Fixed:|$$Attribute:vendor_code$$Fixed:|$$Attribute:part_no$$Fixed:|$$Attribute:pkg_qty$$Fixed:|$$Attribute:mfg_date$$Fixed:|$$Attribute:expiry_date$$Fixed:|$$Attribute:pkg_id$$Fixed:|$$Fixed:|$$Fixed:--$
+            </accumulate_base>
+            <accumulate_type>manual</accumulate_type>
+            <accumulate_source>pkg_id</accumulate_source>
+            <reprint_data_format>$Attribute:qr_code$</reprint_data_format>
+        </content_info>
+        <content_info>
+
+            <index>03</index>
+
+            <name>PRODUCT_NAME</name>
+
+            <layout_type>Text</layout_type>
+
+            <print_code>$Print_code$</print_code>
+
+            <return_attr></return_attr>
+            <bartender_attr>PRODUCT_NAME</bartender_attr>
+            
+            <bartender_return_attr></bartender_return_attr>
+
+            <print_data>
+
+                <print_data_seq>1</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>product_name</print_data_name>
+
+            </print_data>
+
+            <accumulate_base></accumulate_base>
+
+            <accumulate_type></accumulate_type>
+
+            <accumulate_source></accumulate_source>
+
+        </content_info>
+
+
+        <content_info>
+
+            <index>04</index>
+
+            <name>SPEC</name>
+
+            <layout_type>Text</layout_type>
+
+            <print_code>$Print_code$</print_code>
+
+            <return_attr></return_attr>
+            <bartender_attr>SPEC</bartender_attr>
+            
+            <bartender_return_attr></bartender_return_attr>
+
+            <print_data>
+
+                <print_data_seq>1</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>spec</print_data_name>
+
+            </print_data>
+
+            <accumulate_base></accumulate_base>
+
+            <accumulate_type></accumulate_type>
+
+            <accumulate_source></accumulate_source>
+
+        </content_info>
+
+
+        <content_info>
+
+            <index>05</index>
+
+            <name>PART_NO</name>
+
+            <layout_type>Text</layout_type>
+
+            <print_code>$Print_code$</print_code>
+
+            <return_attr></return_attr>
+            <bartender_attr>PART_NO</bartender_attr>
+            
+            <bartender_return_attr></bartender_return_attr>
+
+            <print_data>
+
+                <print_data_seq>1</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>part_no</print_data_name>
+
+            </print_data>
+
+            <accumulate_base></accumulate_base>
+
+            <accumulate_type></accumulate_type>
+
+            <accumulate_source></accumulate_source>
+
+        </content_info>
+
+        <content_info>
+
+            <index>06</index>
+
+            <name>PKG_QTY</name>
+
+            <layout_type>Text</layout_type>
+
+            <print_code>$Print_code$</print_code>
+
+            <return_attr></return_attr>
+            <bartender_attr>PKG_QTY</bartender_attr>
+            
+            <bartender_return_attr></bartender_return_attr>
+
+            <print_data>
+
+                <print_data_seq>1</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>pkg_qty</print_data_name>
+
+            </print_data>
+
+            <accumulate_base></accumulate_base>
+
+            <accumulate_type></accumulate_type>
+
+            <accumulate_source></accumulate_source>
+
+        </content_info>
+
+
+        <content_info>
+
+            <index>07</index>
+
+            <name>MFG_DATE</name>
+
+            <layout_type>Text</layout_type>
+
+            <print_code>$Print_code$</print_code>
+
+            <return_attr></return_attr>
+            <bartender_attr>MFG_DATE</bartender_attr>
+            
+            <bartender_return_attr></bartender_return_attr>
+
+            <print_data>
+
+                <print_data_seq>1</print_data_seq>
+
+                <print_data_type>Attribute</print_data_type>
+
+                <print_data_length></print_data_length>
+
+                <print_data_name>mfg_date</print_data_name>
+
+            </print_data>
+
+            <accumulate_base></accumulate_base>
+
+            <accumulate_type></accumulate_type>
+
+            <accumulate_source></accumulate_source>
+
+        </content_info>
+
+    </content_list>
+    <content_others>
+        <print_code></print_code>
+    </content_others>
+    <label_common>
+        <x_axis></x_axis>
+        <y_axis></y_axis>
+        <unit_rows>1</unit_rows>
+        <unit_columns>1</unit_columns>
+        <unit_height></unit_height>
+        <unit_width></unit_width>
+    </label_common>
+</label>
