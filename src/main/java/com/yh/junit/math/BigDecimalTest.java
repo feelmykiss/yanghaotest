@@ -18,4 +18,20 @@ public class BigDecimalTest {
         System.out.println(divide2);
         System.out.println(divide3);
     }
+
+    @Test
+    public void bgTest1() {
+        BigDecimal bg1 = new BigDecimal("10");
+        BigDecimal bg2 = new BigDecimal("10");
+        BigDecimal divide = bg1.divide(bg2, 2, BigDecimal.ROUND_HALF_EVEN);
+        System.out.println(divide);
+    }
+
+    @Test
+    public void bgTest2() {
+        BigDecimal bg1 = new BigDecimal("10");
+        BigDecimal bg2 = new BigDecimal("11");
+        System.out.println(bg1.compareTo(bg2));
+    }
+
 }

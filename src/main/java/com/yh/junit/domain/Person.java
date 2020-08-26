@@ -5,17 +5,11 @@ import lombok.Data;
 @Data
 public class Person {
     private String book;
-
-    {
-        String abc = "abc";
-        book = abc;
-    }
-
-    private String name = "abc";
-    private String sex = "abc";
-    private String home = "abc";
-    private String money = "abc";
-    private String login = "abc";
-    private String password = "abc";
+    private String name;
+    private String sex;
+    private String home;
+    private String money ;
+    private String login;
+    private String password;
 
 }
