@@ -1,11 +1,11 @@
 package com.yh.junit.list;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ListTest01 {
 
@@ -40,4 +40,60 @@ public class ListTest01 {
             System.out.println("正好整批处理成功");
         }
     }
+
+    @Test
+    public void test04() {
+        StringBuffer xmlSb = new StringBuffer();
+        String blank = " ";
+        xmlSb.append("<")
+                .append("lll")
+                .append(">")
+                .append(blank)
+                .append("</")
+                .append("lll")
+                .append(">");
+        System.out.println(xmlSb);
+    }
+
+
+    @Test
+    public void test05() {
+        Map<String, String> map = new HashMap<>();
+        map.put("ex1", "222");
+        map.put("ex1", "222");
+        map.put("ex1", "222");
+        map.put("ex1", "333");
+        System.out.println(map);
+    }
+
+    @Test
+    public void test06() {
+        Long l1 = 1599722690000L;
+        Date date = new Date(l1);
+        String strDateFormat = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
+        String format = sdf.format(date);
+        System.out.println(format);
+    }
+
+    @Test
+    public void test07() {
+        List<String> lsit1 = new ArrayList<>();
+        lsit1.add("a");
+        lsit1.add("b");
+        lsit1.add("c");
+        lsit1.add("d");
+        lsit1.add("e");
+        lsit1.add("f");
+
+        List<String> lsit2 = new ArrayList<>();
+        lsit2.add("a");
+        lsit2.add("b");
+        lsit2.add("c");
+        lsit2.add("d");
+        System.out.println(lsit1.removeAll(lsit2));
+        System.out.println(lsit1);
+    }
+
+
 }

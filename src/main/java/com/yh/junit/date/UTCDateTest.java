@@ -21,4 +21,14 @@ public class UTCDateTest {
         SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println(simpleDateFormat1.format(date));
     }
+
+
+    @Test
+    public void UTCTest02() throws ParseException {
+
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        String format = simpleDateFormat1.format(date);
+        System.out.println(format);
+    }
 }

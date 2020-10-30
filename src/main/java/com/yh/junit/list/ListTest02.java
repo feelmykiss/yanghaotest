@@ -171,16 +171,18 @@ public class ListTest02 {
         student1.setName("张三");
         student1.setDate(date1);
         Student student2 = new Student();
-        student2.setName("张四");
+        student2.setName("张五");
         student2.setDate(date2);
         Student student3 = new Student();
         student3.setName("张五");
         student3.setDate(date3);
         Student student4 = new Student();
-        student4.setName("张六");
+        student4.setName("");
         student4.setDate(date4);
         List<Student> list1 = Arrays.asList(student2, student1, student3, student4);
-        }
+        Map<String, List<Student>> collect = list1.stream().collect(Collectors.groupingBy(Student::getName));
+        System.out.println(collect);
+    }
 
     @Test
     public void tet13() {
@@ -189,6 +191,51 @@ public class ListTest02 {
         System.out.println(substring);
         String s = str + "2";
         System.out.println(s);
+    }
+
+    @Test
+    public void test14() {
+        String str = "12";
+        String[] split = str.split("-");
+        System.out.println(Arrays.asList(split));
+    }
+
+    @Test
+    public void test15() {
+        List<String> list = new ArrayList<>();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+        list.add("d");
+        List<String> strings = list.subList(0, list.size());
+        System.out.println(strings);
+    }
+
+    @Test
+    public void test16() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("aaa", 111);
+        map.put("bbb", 222);
+        map.put("ccc", 333);
+        map.put("ddd", 444);
+        map.forEach((key, value) ->
+        {
+            System.out.println(key);
+            System.out.println(value);
+        });
+    }
+
+    @Test
+    public void test17() {
+        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
+        map.put("aaa", 111);
+        map.put("bbb", 222);
+        map.put("ccc", 333);
+        map.put("ddd", 444);
+        for (Map.Entry<String, Integer> entry1 : map.entrySet()) {
+            System.out.println(entry1.getKey());
+            System.out.println(entry1.getValue());
+        }
     }
 
 }
