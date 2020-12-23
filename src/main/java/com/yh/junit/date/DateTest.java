@@ -2,9 +2,15 @@ package com.yh.junit.date;
 
 import org.junit.Test;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 public class DateTest {
 
@@ -31,5 +37,25 @@ public class DateTest {
         calendar.set(2018,3,17,17,15,22);
         long milli = calendar.getTimeInMillis();
         System.out.println("java原生ticks: " + milli);
+    }
+
+    @Test
+    public void test03() {
+        long time = System.currentTimeMillis();
+        String format = ISO_LOCAL_DATE_TIME.format(Instant.ofEpochMilli(time).atZone(ZoneOffset.UTC));
+        // "2017-03-07T12:09:04.374"
+        System.out.println(format);
+
+    }
+
+
+    @Test
+    public void test04() {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm.ss.SSSSSS");
+        df.setTimeZone(tz);
+        String nowAsISO = df.format(new Date());
+        System.out.println(nowAsISO);
+
     }
 }

@@ -29,4 +29,23 @@ public class BgTest01 {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         System.out.println(reduce);
     }
+
+
+    @Test
+    public void test02() {
+
+        BigDecimal b1 = new BigDecimal("105425924000");
+        BigDecimal b2 = new BigDecimal(795 * 1000 * 3600);
+        BigDecimal divide = b1.divide(b2, 1, BigDecimal.ROUND_HALF_UP);
+        System.out.println(divide);
+    }
+
+    @Test
+    public void test03() {
+
+        BigDecimal b1 = new BigDecimal(112);
+        BigDecimal b2 = new BigDecimal(200);
+        BigDecimal divide = b1.divide(b2, 4, BigDecimal.ROUND_HALF_UP);
+        System.out.println(divide);
+    }
 }
