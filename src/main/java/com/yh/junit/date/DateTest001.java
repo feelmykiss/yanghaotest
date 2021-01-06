@@ -3,6 +3,7 @@ package com.yh.junit.date;
 import com.yh.junit.domain.Student;
 import org.junit.Test;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -46,4 +47,18 @@ public class DateTest001 {
         String format = sdf.format(student.getDate());
         System.out.println(format);
     }
+
+    @Test
+    public void test3() throws InterruptedException {
+        for (int i = 0; i < 300; i++) {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+            Calendar instance = Calendar.getInstance();
+            Date time = instance.getTime();
+            Thread.sleep(100L);
+            String format = df.format(time);
+            System.out.println(format);
+        }
+    }
+
+
 }

@@ -9,6 +9,11 @@ import java.util.TimeZone;
 
 public class UTCDateTest {
 
+    /**
+     * UTC标准时间转 java 时间
+     *
+     * @throws ParseException
+     */
     @Test
     public void UTCTest01() throws ParseException {
         String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -22,13 +27,4 @@ public class UTCDateTest {
         System.out.println(simpleDateFormat1.format(date));
     }
 
-
-    @Test
-    public void UTCTest02() throws ParseException {
-
-        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        String format = simpleDateFormat1.format(date);
-        System.out.println(format);
-    }
 }

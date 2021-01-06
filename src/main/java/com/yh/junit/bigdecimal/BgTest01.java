@@ -48,4 +48,58 @@ public class BgTest01 {
         BigDecimal divide = b1.divide(b2, 4, BigDecimal.ROUND_HALF_UP);
         System.out.println(divide);
     }
+
+    @Test
+    public void test04() {
+
+        BigDecimal b1 = BigDecimal.valueOf(1.512689956041);
+        System.out.println(b1);
+        // BigDecimal b1 = new BigDecimal("1.51268995604123");
+        BigDecimal bigDecimal = b1.setScale(3, BigDecimal.ROUND_HALF_UP);
+        double res = b1.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
+        System.out.println(bigDecimal);
+        System.out.println(res);
+    }
+
+    @Test
+    public void test05() {
+        List<Double> dataList = new ArrayList<>();
+        dataList.add((double) 65);
+        dataList.add((double) 66);
+        dataList.add((double) 64);
+        dataList.add((double) 66);
+        dataList.add((double) 65);
+
+        BigDecimal sum = BigDecimal.ZERO;
+
+        for (Double d : dataList) {
+            BigDecimal decimal = BigDecimal.valueOf(d);
+            sum = sum.add(decimal);
+
+        }
+        long aLong = dataList.size();
+        System.out.println(sum.divide(BigDecimal.valueOf(aLong), 2, BigDecimal.ROUND_HALF_DOWN));
+    }
+
+    @Test
+    public void test06() {
+        List<Double> dataList = new ArrayList<>();
+        dataList.add((double) 65);
+        dataList.add((double) 66);
+        dataList.add((double) 64);
+        dataList.add((double) 66);
+        dataList.add((double) 65);
+        Double sum = 0.0000;
+
+        for (Double d : dataList) {
+
+            sum += d;
+
+        }
+
+        int Denominator = dataList.size();
+
+        System.out.println(sum / Denominator);
+
+    }
 }
