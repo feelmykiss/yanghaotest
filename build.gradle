@@ -45,4 +45,14 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.4.1'
+
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
+
+    // https://mvnrepository.com/artifact/commons-net/commons-net
+    compile group: 'commons-net', name: 'commons-net', version: '3.6'
+
+    // https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter
+    implementation group: 'com.baomidou', name: 'mybatis-plus-boot-starter', version: '3.4.3'
+
 }

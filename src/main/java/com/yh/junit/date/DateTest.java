@@ -58,4 +58,14 @@ public class DateTest {
         System.out.println(nowAsISO);
 
     }
+
+    @Test
+    public void test05() {
+        Date date=new Date(1620617229376L);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println(date);
+        System.out.println("----------------------------");
+        System.out.println(sdf.format(date));
+
+    }
 }
