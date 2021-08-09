@@ -128,4 +128,14 @@ public class ListTest01 {
          */
     }
 
+    @Test
+    public void test09() {
+        String[] strings = {"a", "b", "c", "d"};
+        List<String> list = new ArrayList<>(Arrays.asList(strings));
+        System.out.println(list);
+        strings[3] = "aaa";
+
+        System.out.println(list);
+    }
+
 }
