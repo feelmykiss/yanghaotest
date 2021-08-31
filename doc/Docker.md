@@ -110,3 +110,82 @@ ENV           # 构建时候设置环境变量
 ```
 
 * docker build -f dockerfile文件路径 -t 镜像名:[tag]
+
+
+# Docker0
+
+* 
+```shell
+# 随机端口启动 Tomcat
+docker run -d -P --name tomcat01 tomcat
+docker run -d -P --name tomcat02 tomcat
+# 查看 Tomcat ip
+docker exec -it tomcat01 ip addr
+```
+
+* 每启动一个 docker 容器, Docker就会给容器分配一个IP. 桥接模式
+* veth-pair 技术
+
+* tomcat01 和 tomcat02 是共用一个路由器,docker0
+所有的容器不指定网络的情况下,都是 docker0 路由的, docker会给容器分配一个默认的可用IP
+  Docker使用的是linux的桥接,宿主机中是一个Docker容器的网桥 docker0
+* Docker 中所有的网络接口都是虚拟的,虚拟的转发效率高.
+
+# --link
+```shell
+docker run -d -P --name tomcat03 --link tomcat02 tomcat
+# 可以ping通
+docker exec -it tomcat03 ping tomcat02
+# 反向无法ping通
+
+docker network false 
+
+```
+
+# 自定义网络
+容器互联
+* 网络模式
+bridge: 桥接(默认)
+none: 不配置
+host: 与宿主机共享
+container: 容器网络连通  
+  
+```shell
+# 直接启动 --net bridge
+docker run -d -P --name tomcat01 tomcat
+docker run -d -P --name tomcat01 --net bridge tomcat
+
+# docker0特点: 默认,域名不能访问, --link 可以打通.
+
+# 自定义网络
+# --driver bridge 桥接
+# --subnet 192.168.0.0/16 子网
+# --gateway 192.168.0.1 网关
+docker network create --driver bridge --subnet 192.168.0.0/16 --gateway 192.168.0.1 mynet
+
+# 查看docker所有网络
+docker network ls
+
+# 查看 自己创建的网络
+docker network inspect mynet
+
+# 使用自己网卡启动
+docker run -d -P --name tomcat-net-01 --net mynet tomcat
+docker run -d -P --name tomcat-net-02 --net mynet tomcat
+
+# 不使用 --link 也可以通过容器名ping通
+docker exec -it tomcat-net-01 ping tomcat-net-02
+```
+* 自定义网络好处
+保证不同的集群使用不同的网络,保证集群安全健康
+  
+
+# 网络连通
+```shell
+docker network connect  mynet tomcat01
+# 连通之后就是将  tomcat01 放到了 mynet 下
+# 一个容器,两个IP地址
+# 阿里云服务: 公网ip 私网ip
+ docker exec -it tomcat01 ping tomcat-net-02
+```
+* 结论: 跨网络操作,需要 docker network connect
