@@ -41,7 +41,7 @@ $ cat xxx.log | grep -C 2  "查询关键字"
 5.查看文件指定行数区间内容
 
 ```shell
-　$sed -n '查询关键字' xxx.log 
+$ sed -n '查询关键字' xxx.log 
 ```
 
 * 查看log,按照关键字过滤.
@@ -80,7 +80,7 @@ cat -b textfile1 textfile2 >> textfile3
 * 把test.txt文件扔进垃圾箱，赋空值test.txt
 
 ```shell
-cat /dev/null > /etc/test.txt 
+cat /dev/null > /etc/R_WIP_PRODUCT.sql 
 ``` 
 
 二、 将文字输出到指定文件
@@ -123,5 +123,6 @@ cat CloudPayment.log | grep "1805"  | grep "1905"  > out.log
 4、grep和tee结合：
 
 ```shell
-# 在文件 CloudPayment.log中搜索订单号1905， 并将搜索结果输出到out.log grep '18051114551940610000' CloudPayment.log | tee -a out.log
+# 在文件 CloudPayment.log中搜索订单号1905， 并将搜索结果输出到out.log 
+grep '18051114551940610000' CloudPayment.log | tee -a out.log
 ```
